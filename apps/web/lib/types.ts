@@ -16,6 +16,13 @@ export interface ShippingOptionView {
   transitWeeksMax: number;
 }
 
+/** A single vehicle photo (cover = position 0). */
+export interface PhotoView {
+  id: string;
+  url: string;
+  position: number;
+}
+
 /** The numbers the cost engine needs, plus presentation fields. */
 export interface VehicleCardView {
   id: string;
@@ -28,6 +35,8 @@ export interface VehicleCardView {
   conditionGrade: string;
   hasClaims: boolean;
   etaLabel: string;
+  /** Cover photo (position 0) when present; null falls back to generated art. */
+  coverPhotoUrl: string | null;
   // cost-engine inputs (decimal strings)
   purchasePriceCAD: string;
   defaultShippingMethod: ShippingMethod;
@@ -39,6 +48,7 @@ export interface VehicleCardView {
 export interface VehicleDetailView extends VehicleCardView {
   vin: string | null;
   description: string;
+  photos: PhotoView[];
   shippingOptions: ShippingOptionView[];
   clearing: {
     costNGN: string;
@@ -117,6 +127,72 @@ export interface AdminReservationView {
   expired: boolean;
   vehicle: AdminVehicleRef;
   buyer: AdminBuyerRef;
+}
+
+/* ---- Admin catalog (vehicle management) shapes ---- */
+
+export interface AdminVehicleListItem {
+  id: string;
+  name: string;
+  status: string;
+  bodyType: string;
+  year: number;
+  conditionGrade: string;
+  purchasePriceCAD: string;
+  coverPhotoUrl: string | null;
+  photoCount: number;
+  shippingCount: number;
+  hasClearing: boolean;
+  updatedAt: string;
+}
+
+export interface AdminPhotoView {
+  id: string;
+  url: string;
+  position: number;
+}
+
+export interface AdminShippingRow {
+  method: ShippingMethod;
+  containerType: "SHARED" | "SOLE" | null;
+  costCAD: string;
+  transitWeeksMin: number;
+  transitWeeksMax: number;
+}
+
+export interface AdminClearingView {
+  costNGN: string;
+  agentName: string;
+  quoteRef: string | null;
+  quotedAt: string;
+  validUntil: string | null;
+}
+
+export interface AdminHistoryView {
+  hasClaims: boolean;
+  summary: string | null;
+  reportUrl: string | null;
+}
+
+export interface AdminVehicleEdit {
+  id: string;
+  make: string;
+  model: string;
+  year: number;
+  trim: string | null;
+  bodyType: string;
+  mileageKm: number;
+  conditionGrade: string;
+  vin: string | null;
+  description: string;
+  purchasePriceCAD: string;
+  defaultShippingMethod: ShippingMethod;
+  handlingRateOverride: string | null;
+  status: string;
+  photos: AdminPhotoView[];
+  shippingOptions: AdminShippingRow[];
+  clearing: AdminClearingView | null;
+  history: AdminHistoryView | null;
 }
 
 /* ---- Subscription / checkout transport shapes ---- */

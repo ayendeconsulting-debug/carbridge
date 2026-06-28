@@ -5,8 +5,9 @@ import {
   listCarRequestsForAdmin,
   listMatchableVehicles,
 } from "@/lib/admin";
+import { listVehiclesForAdmin } from "@/lib/admin-catalog";
 import { AdminGate } from "@/components/AdminGate";
-import { AdminConsole } from "@/components/AdminConsole";
+import { AdminTabs } from "@/components/AdminTabs";
 
 export const dynamic = "force-dynamic";
 
@@ -15,19 +16,21 @@ export default async function AdminPage() {
     return <AdminGate />;
   }
 
-  const [offers, reservations, carRequests, matchable] = await Promise.all([
+  const [offers, reservations, carRequests, matchable, vehicles] = await Promise.all([
     listOffersForAdmin(),
     listReservationsForAdmin(),
     listCarRequestsForAdmin(),
     listMatchableVehicles(),
+    listVehiclesForAdmin(),
   ]);
 
   return (
-    <AdminConsole
+    <AdminTabs
       offers={offers}
       reservations={reservations}
       carRequests={carRequests}
       matchable={matchable}
+      vehicles={vehicles}
     />
   );
 }

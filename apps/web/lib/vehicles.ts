@@ -3,6 +3,7 @@ import type {
   VehicleCardView,
   VehicleDetailView,
   ShippingOptionView,
+  PhotoView,
 } from "./types";
 import type { ShippingMethod } from "@carbridge/shared";
 
@@ -20,6 +21,7 @@ function fetchVehicles() {
       shippingOptions: true,
       clearingQuotes: { orderBy: { quotedAt: "desc" }, take: 1 },
       historyReport: true,
+      photos: { orderBy: { position: "asc" }, take: 1 },
     },
   });
 }
@@ -55,6 +57,7 @@ function toCard(row: Row): VehicleCardView {
     conditionGrade: row.conditionGrade,
     hasClaims: row.historyReport?.hasClaims ?? false,
     etaLabel: etaLabel(ship.min, ship.max),
+    coverPhotoUrl: row.photos[0]?.url ?? null,
     purchasePriceCAD: row.purchasePriceCAD.toString(),
     defaultShippingMethod: ship.method,
     defaultShippingCostCAD: ship.cost,
@@ -77,6 +80,7 @@ export async function getVehicleDetail(
       shippingOptions: { orderBy: { method: "asc" } },
       clearingQuotes: { orderBy: { quotedAt: "desc" }, take: 1 },
       historyReport: true,
+      photos: { orderBy: { position: "asc" } },
     },
   });
   if (!row) return null;
@@ -87,6 +91,11 @@ export async function getVehicleDetail(
     costCAD: o.costCAD.toString(),
     transitWeeksMin: o.transitWeeksMin,
     transitWeeksMax: o.transitWeeksMax,
+  }));
+  const photos: PhotoView[] = row.photos.map((p) => ({
+    id: p.id,
+    url: p.url,
+    position: p.position,
   }));
   const ship = defaultShipping(row);
   const clearing = row.clearingQuotes[0];
@@ -102,6 +111,7 @@ export async function getVehicleDetail(
     conditionGrade: row.conditionGrade,
     hasClaims: row.historyReport?.hasClaims ?? false,
     etaLabel: etaLabel(ship.min, ship.max),
+    coverPhotoUrl: row.photos[0]?.url ?? null,
     purchasePriceCAD: row.purchasePriceCAD.toString(),
     defaultShippingMethod: ship.method,
     defaultShippingCostCAD: ship.cost,
@@ -109,6 +119,7 @@ export async function getVehicleDetail(
     handlingRate: row.handlingRateOverride ? row.handlingRateOverride.toString() : null,
     vin: row.vin,
     description: row.description,
+    photos,
     shippingOptions,
     clearing: clearing
       ? {

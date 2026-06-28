@@ -14,8 +14,26 @@ export function VehicleCard({ v, fx }: { v: VehicleCardView; fx: FxView }) {
 
   return (
     <Link href={`/vehicles/${v.id}`} className="card" style={{ textDecoration: "none", color: "inherit" }}>
-      <div className="photo" style={{ background: `linear-gradient(135deg,${pal.g1},${pal.g2})` }}>
-        <CarArt color={pal.art} />
+      <div
+        className="photo"
+        style={{
+          position: "relative",
+          background: v.coverPhotoUrl
+            ? "#0E211E"
+            : `linear-gradient(135deg,${pal.g1},${pal.g2})`,
+        }}
+      >
+        {v.coverPhotoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={v.coverPhotoUrl}
+            alt={`${v.make} ${v.model}`}
+            loading="lazy"
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+          />
+        ) : (
+          <CarArt color={pal.art} />
+        )}
         <span className="bl-tag">B/L · CB-{v.id.slice(0, 5).toUpperCase()}</span>
         <span className="grade" style={{ background: gradeColor(v.conditionGrade) }}>{v.conditionGrade}</span>
       </div>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { CarArt } from "./CarArt";
 import { DetailClient } from "./DetailClient";
+import { PhotoGallery } from "./PhotoGallery";
 import { paletteFor, gradeColor } from "@/lib/art";
 import type { FxView, Tier, VehicleDetailView } from "@/lib/types";
 
@@ -16,13 +17,20 @@ export function VehicleDetail({
   inModal?: boolean;
 }) {
   const pal = paletteFor(v.id);
+  const hasPhotos = v.photos.length > 0;
 
   return (
     <div style={{ paddingBottom: 40 }}>
-      <div className="ov-photo" style={{ position: "relative", background: `linear-gradient(135deg,${pal.g1},${pal.g2})`, aspectRatio: "16/10", display: "grid", placeItems: "center" }}>
-        <CarArt color={pal.art} />
+      <div style={{ position: "relative" }}>
+        {hasPhotos ? (
+          <PhotoGallery photos={v.photos} alt={`${v.make} ${v.model}`} />
+        ) : (
+          <div className="ov-photo" style={{ position: "relative", background: `linear-gradient(135deg,${pal.g1},${pal.g2})`, aspectRatio: "16/10", display: "grid", placeItems: "center" }}>
+            <CarArt color={pal.art} />
+          </div>
+        )}
         {!inModal && (
-          <Link href="/gallery" className="mono" style={{ position: "absolute", left: 14, top: 14, background: "rgba(11,20,19,.7)", border: "1px solid var(--rule)", borderRadius: 8, padding: "7px 11px", fontSize: 11, color: "var(--frost)", textDecoration: "none" }}>← Inventory</Link>
+          <Link href="/gallery" className="mono" style={{ position: "absolute", left: 14, top: 14, zIndex: 2, background: "rgba(11,20,19,.7)", border: "1px solid var(--rule)", borderRadius: 8, padding: "7px 11px", fontSize: 11, color: "var(--frost)", textDecoration: "none" }}>← Inventory</Link>
         )}
       </div>
 
@@ -48,7 +56,7 @@ export function VehicleDetail({
           <Stat k="Odometer" val={`${v.mileageKm.toLocaleString()} km`} />
           <Stat k="History" val={v.hasClaims ? "1 minor claim" : "Clean · no claims"} tone={v.hasClaims ? "warn" : "ok"} />
           <Stat k="Transit to Lagos" val={v.etaLabel} />
-          <Stat k="Clearing" val="Quoted ✓" tone="ok" />
+          <Stat k="Clearing" val={v.clearing ? "Quoted ✓" : "Pending"} tone={v.clearing ? "ok" : "warn"} />
         </div>
 
         <div className="mono" style={{ fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--steel-dim)", margin: "20px 0 8px" }}>The vehicle</div>
