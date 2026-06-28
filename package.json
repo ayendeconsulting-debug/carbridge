@@ -1,0 +1,16 @@
+{
+  "name": "carbridge",
+  "version": "0.0.0",
+  "private": true,
+  "description": "CarBridge — Canadian cars, landed in Lagos. pnpm monorepo.",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck",
+    "fx:tick": "node scripts/fx-dev-tick.mjs"
+  }
+}

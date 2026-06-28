@@ -1,0 +1,22 @@
+name: fx-refresh
+# Refreshes the CAD→NGN rate every ~10 min by pinging the app's refresh route.
+# Replaces Vercel Hobby cron (daily-only). Set repo secrets:
+#   FX_REFRESH_URL    = https://<your-app>/api/fx/refresh
+#   FX_REFRESH_SECRET = same value as the app's FX_REFRESH_SECRET
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch: {}
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping FX refresh
+        run: |
+          code=$(curl -fsS -X POST "$FX_REFRESH_URL" \
+            -H "Authorization: Bearer $FX_REFRESH_SECRET" \
+            -o /dev/null -w "%{http_code}")
+          echo "refresh responded: $code"
+        env:
+          FX_REFRESH_URL: ${{ secrets.FX_REFRESH_URL }}
+          FX_REFRESH_SECRET: ${{ secrets.FX_REFRESH_SECRET }}

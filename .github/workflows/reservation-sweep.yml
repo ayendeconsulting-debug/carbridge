@@ -1,0 +1,26 @@
+name: reservation-sweep
+# Expires stale PENDING reservations (freeing the vehicle) and stale offers, by
+# pinging the app's sweep route. NOT yet scheduled — this is the "wire the cron
+# later" mechanism. To turn it on:
+#   1. uncomment the `schedule:` block below, and
+#   2. ensure repo secrets exist:
+#        SWEEP_URL    = https://<your-app>/api/admin/sweep
+#        FX_REFRESH_SECRET = same value as the app env (reused as the bearer)
+# Until then, run it by hand from Actions → reservation-sweep → Run workflow.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch: {}
+jobs:
+  sweep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping sweep
+        run: |
+          code=$(curl -fsS -X POST "$SWEEP_URL" \
+            -H "Authorization: Bearer $FX_REFRESH_SECRET" \
+            -o /dev/null -w "%{http_code}")
+          echo "sweep responded: $code"
+        env:
+          SWEEP_URL: ${{ secrets.SWEEP_URL }}
+          FX_REFRESH_SECRET: ${{ secrets.FX_REFRESH_SECRET }}

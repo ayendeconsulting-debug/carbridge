@@ -1,0 +1,12 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# pnpm 11 blocks dependency build scripts by default (strictDepBuilds = true).
+# These settings live HERE — not in .npmrc or package.json (both ignored in v11).
+allowBuilds:
+  esbuild: true            # vitest -> vite -> esbuild (links its prebuilt binary)
+  prisma: true             # Prisma CLI
+  "@prisma/client": true   # runs `prisma generate` on install
+  "@prisma/engines": true  # fetches the Prisma query/schema engines
+  sharp: true              # Next.js image optimization (next/image)
