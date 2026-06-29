@@ -29,7 +29,7 @@ export function VehicleCard({ v, fx }: { v: VehicleCardView; fx: FxView }) {
             src={v.coverPhotoUrl}
             alt={`${v.make} ${v.model}`}
             loading="lazy"
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "contain" }}
           />
         ) : (
           <CarArt color={pal.art} />
