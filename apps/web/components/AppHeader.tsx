@@ -50,7 +50,7 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
               <circle cx="16.5" cy="14.5" r="1.4" fill="#E8973A" />
             </svg>
           </div>
-          <div className="wm">CarBridge<small>CANADA → LAGOS</small></div>
+          <div className="wm">Ayende Autos<small>CANADA → LAGOS</small></div>
         </Link>
         <div className="acct">
           {tier !== "PREMIUM" && (

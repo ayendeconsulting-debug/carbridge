@@ -130,7 +130,7 @@ export function AdminConsole({
     <div style={{ maxWidth: 760, margin: "0 auto", padding: "0 16px 80px" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0 6px" }}>
         <div>
-          <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>CarBridge · Operations</div>
+          <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>Ayende Autos · Operations</div>
           <h1 className="exp" style={{ fontSize: 22, fontWeight: 800, marginTop: 6 }}>Admin console</h1>
         </div>
         <button className="mono" onClick={exitAdmin} style={{ background: "transparent", border: "1px solid var(--rule)", borderRadius: 8, padding: "7px 11px", fontSize: 11, color: "var(--steel)", cursor: "pointer" }}>

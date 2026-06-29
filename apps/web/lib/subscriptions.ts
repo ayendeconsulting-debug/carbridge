@@ -1,5 +1,6 @@
 import { prisma } from "./prisma";
 import { Prisma } from "@prisma/client";
+import { sendPremiumGrantedEmail } from "./email";
 
 const YEAR_MS = 365 * 24 * 60 * 60 * 1000;
 
@@ -74,6 +75,10 @@ export async function grantPremium(
     });
     return r;
   });
+
+  // Best-effort: notify the buyer their Premium is active (never throws).
+  await sendPremiumGrantedEmail({ userId, expiresAt: res.expiresAt });
+
   return { expiresAt: res.expiresAt.toISOString(), created: res.created };
 }
 

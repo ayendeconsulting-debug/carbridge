@@ -4,14 +4,16 @@ import { prisma } from "./prisma";
 export type DocKind = "QUOTE" | "INVOICE";
 
 const PREFIX: Record<DocKind, string> = {
-  QUOTE: "CB-Q",
-  INVOICE: "CB-INV",
+  QUOTE: "AA-Q",
+  INVOICE: "AA-INV",
 };
 
 /**
- * Next document number for a kind, e.g. "CB-Q-2026-001" / "CB-INV-2026-001".
+ * Next document number for a kind, e.g. "AA-Q-2026-001" / "AA-INV-2026-001".
  * Atomic upsert + increment on DocumentCounter so concurrent issues never
- * collide on the same sequence. Mirrors the proven AQI numbering pattern.
+ * collide on the same sequence. The per-year sequence is keyed by (kind, year)
+ * only — the prefix is not part of the key, so switching CB- → AA- continues
+ * the existing sequence rather than resetting it.
  */
 export async function nextDocumentNumber(kind: DocKind): Promise<string> {
   const year = new Date().getFullYear();

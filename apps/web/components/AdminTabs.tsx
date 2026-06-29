@@ -85,7 +85,7 @@ export function AdminTabs({
   return (
     <div style={{ maxWidth: 1100, margin: "0 auto", padding: "20px 16px 60px" }}>
       <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>
-        CarBridge · Operations
+        Ayende Autos · Operations
       </div>
 
       <div style={{ display: "flex", gap: 18, margin: "12px 0 20px", borderBottom: "1px solid var(--rule)" }}>

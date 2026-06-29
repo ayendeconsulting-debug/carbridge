@@ -12,7 +12,7 @@ export function AdminGate() {
   return (
     <div style={{ maxWidth: 420, margin: "80px auto 0", padding: "0 20px", textAlign: "center" }}>
       <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>
-        CarBridge · Operations
+        Ayende Autos · Operations
       </div>
       <h1 className="exp" style={{ fontSize: 24, fontWeight: 800, margin: "10px 0 8px" }}>Admin console</h1>
       <p style={{ color: "var(--steel)", marginBottom: 22, lineHeight: 1.6 }}>

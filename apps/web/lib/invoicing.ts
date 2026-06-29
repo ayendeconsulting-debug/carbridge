@@ -13,6 +13,12 @@ import { getCurrentSnapshot } from "./fx";
 import { nextDocumentNumber } from "./numbering";
 import { getBankInstructions, invoiceDueDays } from "./settings";
 import { applyPremiumGrant } from "./subscriptions";
+import {
+  sendQuoteEmail,
+  sendInvoiceEmail,
+  sendReceiptEmail,
+  sendPremiumGrantedEmail,
+} from "./email";
 
 export type ServiceResult<T> =
   | ({ ok: true } & T)
@@ -23,6 +29,15 @@ const fail = (error: string, status: number): { ok: false; error: string; status
   error,
   status,
 });
+
+/** Buyer-facing vehicle label, e.g. "2020 Ford Edge". Best-effort. */
+async function vehicleName(vehicleId: string): Promise<string> {
+  const v = await prisma.vehicle.findUnique({
+    where: { id: vehicleId },
+    select: { make: true, model: true, year: true },
+  });
+  return v ? `${v.year} ${v.make} ${v.model}` : "your vehicle";
+}
 
 /**
  * Reconstruct the itemized landed breakdown for a reservation, pinned to its
@@ -132,6 +147,16 @@ export async function issueQuotationForReservation(
     return q;
   });
 
+  // Best-effort buyer notification (never throws).
+  await sendQuoteEmail({
+    userId: reservation.userId,
+    number,
+    vehicleName: await vehicleName(reservation.vehicleId),
+    totalNGN: reservation.lockedTotalNGN.toString(),
+    totalCAD: reservation.lockedTotalCAD.toString(),
+    validUntil: reservation.rateLock?.expiresAt ?? null,
+  });
+
   return { ok: true, quotationId: quotation.id, number };
 }
 
@@ -190,6 +215,17 @@ export async function issueInvoiceForQuotation(
     return inv;
   });
 
+  // Best-effort buyer notification with bank details + due date (never throws).
+  await sendInvoiceEmail({
+    userId: q.userId,
+    kind: "CAR",
+    number,
+    amountNGN: q.totalNGN.toString(),
+    dueAt,
+    bank,
+    vehicleName: await vehicleName(q.vehicleId),
+  });
+
   return { ok: true, invoiceId: invoice.id, number };
 }
 
@@ -235,6 +271,16 @@ export async function issueMembershipInvoice(
       },
     });
     return inv;
+  });
+
+  // Best-effort buyer notification with bank details + due date (never throws).
+  await sendInvoiceEmail({
+    userId,
+    kind: "MEMBERSHIP",
+    number,
+    amountNGN: amount,
+    dueAt,
+    bank,
   });
 
   return { ok: true, invoiceId: invoice.id, number };
@@ -291,6 +337,10 @@ export async function recordPayment(
   if (!invoice) return fail("Invoice not found", 404);
   if (invoice.status === "VOID") return fail("Invoice is void", 409);
 
+  // Capture the pre-transaction status so notifications fire ONLY on the
+  // ISSUED/PART_PAID → PAID transition (idempotent re-submits won't re-send).
+  const wasPaid = invoice.status === "PAID";
+
   // Global dedup: a real-world transfer reference maps to exactly one Payment.
   // If it already exists against a DIFFERENT invoice, refuse rather than confuse.
   const priorByRef = await prisma.payment.findUnique({ where: { reference } });
@@ -298,7 +348,7 @@ export async function recordPayment(
     return fail("That reference is already recorded against another invoice", 409);
   }
 
-  const result = await prisma.$transaction(async (tx) => {
+  const txResult = await prisma.$transaction(async (tx) => {
     // Upsert-by-reference: a repeat submit of the same reference is idempotent.
     await tx.payment.upsert({
       where: { reference },
@@ -336,6 +386,7 @@ export async function recordPayment(
     // MEMBERSHIP invoices grant Premium (extend-in-place).
     let reservationAdvanced = false;
     let premiumGranted = false;
+    let grantExpiresAt: Date | null = null;
     if (status === "PAID") {
       if (invoice.kind === "CAR") {
         const reservation = invoice.quotation?.reservation ?? null;
@@ -351,7 +402,8 @@ export async function recordPayment(
           reservationAdvanced = true;
         }
       } else if (invoice.kind === "MEMBERSHIP") {
-        await applyPremiumGrant(tx, invoice.userId, { invoiceId: invoice.id });
+        const grant = await applyPremiumGrant(tx, invoice.userId, { invoiceId: invoice.id });
+        grantExpiresAt = grant.expiresAt;
         premiumGranted = true;
       }
     }
@@ -372,8 +424,31 @@ export async function recordPayment(
       },
     });
 
-    return { invoiceStatus: status, amountPaid: paid.toString(), reservationAdvanced, premiumGranted };
+    return {
+      invoiceStatus: status,
+      amountPaid: paid.toString(),
+      reservationAdvanced,
+      premiumGranted,
+      grantExpiresAt,
+    };
   });
+
+  const { grantExpiresAt, ...result } = txResult;
+
+  // Best-effort notifications on the → PAID transition only (never throw).
+  if (result.invoiceStatus === "PAID" && !wasPaid) {
+    if (invoice.kind === "CAR") {
+      const reservation = invoice.quotation?.reservation ?? null;
+      await sendReceiptEmail({
+        userId: invoice.userId,
+        invoiceNumber: invoice.number ?? "",
+        amountPaidNGN: result.amountPaid,
+        vehicleName: reservation ? await vehicleName(reservation.vehicleId) : "your vehicle",
+      });
+    } else if (invoice.kind === "MEMBERSHIP") {
+      await sendPremiumGrantedEmail({ userId: invoice.userId, expiresAt: grantExpiresAt });
+    }
+  }
 
   return { ok: true, ...result };
 }

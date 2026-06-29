@@ -34,7 +34,7 @@ export default async function UpgradePage() {
   return (
     <div style={{ maxWidth: 460, margin: "32px auto 0", padding: "0 20px 80px" }}>
       <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>Membership</div>
-      <h1 className="exp" style={{ fontSize: 26, fontWeight: 800, margin: "10px 0 6px" }}>CarBridge Premium</h1>
+      <h1 className="exp" style={{ fontSize: 26, fontWeight: 800, margin: "10px 0 6px" }}>Ayende Autos Premium</h1>
       <p style={{ color: "var(--steel)", lineHeight: 1.6, marginBottom: 20 }}>
         Browsing stays free. Premium unlocks buying — reservations and offers with a locked rate.
       </p>

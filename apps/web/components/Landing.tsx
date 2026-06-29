@@ -139,7 +139,7 @@ function LandingNav() {
     <div className="lnav-in">
       <div className="brand">
         <Logo />
-        <div className="wm">CarBridge<small>CANADA → LAGOS</small></div>
+        <div className="wm">Ayende Autos<small>CANADA → LAGOS</small></div>
       </div>
       <div className="lnav-r">
         <Link className="ghost" href="/gallery">Browse</Link>
@@ -330,7 +330,7 @@ export function Landing() {
                     <div className="lvals"><div className="primary" id="h_clrNgn">₦2,600,000</div><div className="secondary" id="h_clrCad">$2,261</div></div>
                   </div>
                   <div className="lline dest">
-                    <div className="name">CarBridge handling<div className="meta">12% of landed subtotal</div></div>
+                    <div className="name">Ayende Autos handling<div className="meta">12% of landed subtotal</div></div>
                     <div className="lvals"><div className="primary" id="h_hndNgn">₦3,023,700</div><div className="secondary" id="h_hndCad">$2,629</div></div>
                   </div>
                   <div className="totalblk">
@@ -430,11 +430,11 @@ export function Landing() {
           <div className="frow">
             <div className="brand">
               <Logo />
-              <div className="wm">CarBridge<small>CANADA → LAGOS</small></div>
+              <div className="wm">Ayende Autos<small>CANADA → LAGOS</small></div>
             </div>
             <Link className="ghost" href="/gallery">Browse inventory</Link>
           </div>
-          <div className="copy">© 2026 CarBridge · <b>Working title — brand TBD</b><br />Canadian cars, landed in Lagos. FX rates indicative until rate-locked. Clearing figures from accredited agent quotations.</div>
+          <div className="copy">© 2026 Ayende Autos<br />Canadian cars, landed in Lagos. FX rates indicative until rate-locked. Clearing figures from accredited agent quotations.</div>
         </footer>
       </div>
     </div>

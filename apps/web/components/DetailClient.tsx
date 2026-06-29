@@ -183,7 +183,7 @@ export function DetailClient({
           <div className="lvals"><div className="primary">{line("clearing")?.ngn}</div><div className="secondary">{line("clearing")?.cad}</div></div>
         </div>
         <div className="lline dest">
-          <div className="name">CarBridge handling<div className="meta">12% of landed subtotal</div></div>
+          <div className="name">Ayende Autos handling<div className="meta">12% of landed subtotal</div></div>
           <div className="lvals"><div className="primary">{line("handling")?.ngn}</div><div className="secondary">{line("handling")?.cad}</div></div>
         </div>
         <div className="totalblk">

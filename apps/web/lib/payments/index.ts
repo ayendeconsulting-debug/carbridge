@@ -27,7 +27,7 @@ export interface Plan {
 /** Premium plan config (OQ-3: ₦45,000/yr assumed; override via env). */
 export function getPlan(): Plan {
   const priceNgn = process.env.PREMIUM_PRICE_NGN ?? "45000";
-  const name = process.env.PREMIUM_PLAN_NAME ?? "CarBridge Premium (annual)";
+  const name = process.env.PREMIUM_PLAN_NAME ?? "Ayende Autos Premium (annual)";
   return { name, priceNgn, amountKobo: nairaToKobo(priceNgn) };
 }
 
