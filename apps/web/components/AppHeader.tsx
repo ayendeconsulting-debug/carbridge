@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
@@ -19,6 +20,7 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
   const live = useFxRate(fx);
   const router = useRouter();
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const navOn = (href: string) =>
     href === "/gallery"
@@ -64,7 +66,7 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
           {CLERK_ENABLED ? (
             <>
               <Show when="signed-in">
-                <Link href="/account" className="mono" style={{ fontSize: 10, letterSpacing: 0.5, textTransform: "uppercase", color: "var(--steel)", textDecoration: "none" }}>Activity</Link>
+                <Link href="/account" className="acct-activity mono" style={{ fontSize: 10, letterSpacing: 0.5, textTransform: "uppercase", color: "var(--steel)", textDecoration: "none" }}>Activity</Link>
                 <UserButton />
               </Show>
               <Show when="signed-out">
@@ -76,8 +78,28 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
           ) : (
             <Link href="/account" className="avatar" style={{ textDecoration: "none", display: "grid", placeItems: "center" }}>CB</Link>
           )}
+          <button
+            className="burger"
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen((o) => !o)}
+          >
+            {menuOpen ? (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 6l12 12M18 6L6 18" strokeLinecap="round" /></svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 7h16M4 12h16M4 17h16" strokeLinecap="round" /></svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {menuOpen && (
+        <nav className="hmenu" onClick={() => setMenuOpen(false)}>
+          <Link href="/gallery" className={navOn("/gallery") ? "on" : ""}>Gallery</Link>
+          <Link href="/account" className={navOn("/account") ? "on" : ""}>Activity</Link>
+          {isAdmin && <Link href="/admin" className={navOn("/admin") ? "on" : ""}>Admin</Link>}
+        </nav>
+      )}
 
       <nav className="hnav">
         <Link href="/gallery" className={`navlink${navOn("/gallery") ? " on" : ""}`}>Gallery</Link>

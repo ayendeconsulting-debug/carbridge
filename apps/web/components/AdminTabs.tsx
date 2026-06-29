@@ -5,6 +5,7 @@ import { AdminConsole } from "./AdminConsole";
 import { AdminCatalog } from "./AdminCatalog";
 import { AdminBilling } from "./AdminBilling";
 import { AdminMembers } from "./AdminMembers";
+import { AdminOverview, type AdminTabKey } from "./AdminOverview";
 import type {
   AdminOfferView,
   AdminReservationView,
@@ -66,7 +67,7 @@ export function AdminTabs({
   users: AdminUserView[];
   memberships: AdminMembershipInvoiceView[];
 }) {
-  const [tab, setTab] = useState<"catalog" | "responses" | "billing" | "members">("catalog");
+  const [tab, setTab] = useState<AdminTabKey>("overview");
 
   const pending =
     offers.filter((o) => o.status === "SUBMITTED" || o.status === "COUNTERED").length +
@@ -88,6 +89,7 @@ export function AdminTabs({
       </div>
 
       <div style={{ display: "flex", gap: 18, margin: "12px 0 20px", borderBottom: "1px solid var(--rule)" }}>
+        <TabBtn active={tab === "overview"} onClick={() => setTab("overview")}>Overview</TabBtn>
         <TabBtn active={tab === "catalog"} onClick={() => setTab("catalog")}>Catalog</TabBtn>
         <TabBtn active={tab === "responses"} onClick={() => setTab("responses")}>
           Responses{pending > 0 ? ` (${pending})` : ""}
@@ -100,7 +102,17 @@ export function AdminTabs({
         </TabBtn>
       </div>
 
-      {tab === "catalog" ? (
+      {tab === "overview" ? (
+        <AdminOverview
+          offers={offers}
+          reservations={reservations}
+          carRequests={carRequests}
+          vehicles={vehicles}
+          billing={billing}
+          memberships={memberships}
+          onNavigate={setTab}
+        />
+      ) : tab === "catalog" ? (
         <AdminCatalog vehicles={vehicles} />
       ) : tab === "responses" ? (
         <AdminConsole

@@ -53,6 +53,26 @@ header{position:sticky;top:0;z-index:40;background:rgba(11,20,19,.86);backdrop-f
 .navlink.admin{margin-left:auto;color:var(--steel-dim)}
 .navlink.admin:hover{color:var(--frost)}
 
+/* burger + slide-down menu (mobile only) */
+.burger{display:none;background:transparent;border:1px solid var(--rule);border-radius:8px;
+  width:34px;height:30px;cursor:pointer;align-items:center;justify-content:center;color:var(--frost);padding:0}
+.burger svg{width:18px;height:18px;display:block}
+.hmenu{display:none}
+@media(max-width:640px){
+  .hnav{display:none}
+  .burger{display:inline-flex}
+  .acct-activity{display:none}
+  .hmenu{display:block;border-top:1px solid var(--rule-2);background:rgba(8,18,17,.55);
+    padding:4px 14px 10px;animation:hmenuIn .16s ease}
+  .hmenu a{display:block;font-family:'Spline Sans Mono';font-size:13px;letter-spacing:.6px;
+    text-transform:uppercase;color:var(--steel);text-decoration:none;padding:12px 4px;
+    border-bottom:1px solid var(--rule-2)}
+  .hmenu a:last-child{border-bottom:none}
+  .hmenu a.on{color:var(--amber)}
+}
+@keyframes hmenuIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion: reduce){.hmenu{animation:none}}
+
 /* fx strip */
 .fx{display:flex;align-items:center;gap:9px;padding:9px 18px;background:rgba(15,76,74,.12);
   border-top:1px solid var(--rule-2)}.dot{width:7px;height:7px;border-radius:50%;background:var(--amber);position:relative;flex-shrink:0}
