@@ -35,6 +35,7 @@ enum PaymentProvider {
   PAYSTACK
   FLUTTERWAVE
   STRIPE
+  MANUAL // admin grant or off-platform (bank) membership payment
 }
 
 enum BodyType {
@@ -105,6 +106,49 @@ enum CarRequestStatus {
   CANCELLED
 }
 
+// Vehicle spec attributes
+enum Transmission {
+  AUTOMATIC
+  MANUAL
+}
+
+enum FuelType {
+  PETROL
+  DIESEL
+  HYBRID
+  ELECTRIC
+}
+
+// Quote / invoice integration (the portfolio quote+invoice platform is the
+// external system of record for documents + money; CarBridge stores references
+// and a synced status).
+enum QuotationStatus {
+  DRAFT
+  ISSUED
+  ACCEPTED
+  EXPIRED
+  VOID
+}
+
+enum InvoiceKind {
+  CAR
+  MEMBERSHIP
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PART_PAID
+  PAID
+  VOID
+}
+
+enum PaymentSource {
+  CARBRIDGE // recorded by an admin inside CarBridge
+  PLATFORM // recorded directly in the external platform
+  WEBHOOK // delivered to CarBridge by the platform webhook
+}
+
 // ------------------------------------------------------------------
 // Identity & membership
 // ------------------------------------------------------------------
@@ -124,6 +168,9 @@ model User {
   favorites     Favorite[]
   rateLocks     RateLock[]
   carRequests   CarRequest[]
+  quotations    Quotation[]
+  invoices      Invoice[]
+  recordedPayments Payment[]
 
   @@index([tier])
 }
@@ -134,13 +181,15 @@ model Subscription {
   plan        String
   status      SubscriptionStatus @default(ACTIVE)
   provider    PaymentProvider
-  providerRef String
+  providerRef String? // null for MANUAL admin grants (no gateway reference)
+  invoiceId   String?            @unique // set when granted via a membership invoice
   startedAt   DateTime           @default(now())
   expiresAt   DateTime
   createdAt   DateTime           @default(now())
   updatedAt   DateTime           @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invoice Invoice? @relation(fields: [invoiceId], references: [id])
 
   @@index([userId])
   @@index([status, expiresAt])
@@ -159,6 +208,9 @@ model Vehicle {
   bodyType              BodyType
   mileageKm             Int
   conditionGrade        String // e.g. "A", "A-", "B+"
+  transmission          Transmission? // nullable: legacy/partial rows tolerated; form requires it
+  fuelType              FuelType?
+  colour                String?
   vin                   String?        @unique
   description           String         @db.Text
   purchasePriceCAD      Decimal        @db.Decimal(12, 2)
@@ -176,6 +228,7 @@ model Vehicle {
   reservations   Reservation[]
   favorites      Favorite[]
   carRequestMatches CarRequest[] @relation("CarRequestMatch")
+  quotations     Quotation[]
 
   @@index([status])
   @@index([make, model, year])
@@ -291,6 +344,7 @@ model Offer {
   vehicle  Vehicle   @relation(fields: [vehicleId], references: [id])
   user     User      @relation(fields: [userId], references: [id])
   rateLock RateLock? @relation(fields: [rateLockId], references: [id])
+  quotations Quotation[]
 
   @@index([vehicleId])
   @@index([userId])
@@ -314,6 +368,7 @@ model Reservation {
   vehicle  Vehicle   @relation(fields: [vehicleId], references: [id])
   user     User      @relation(fields: [userId], references: [id])
   rateLock RateLock? @relation(fields: [rateLockId], references: [id])
+  quotations Quotation[]
 
   @@index([vehicleId])
   @@index([userId])
@@ -363,6 +418,112 @@ model Favorite {
 
   @@unique([userId, vehicleId])
   @@index([userId])
+}
+
+// ------------------------------------------------------------------
+// Quote / invoice (layers after an accepted offer or a reservation)
+// ------------------------------------------------------------------
+
+model Quotation {
+  id            String          @id @default(cuid())
+  number        String?         @unique // native CB-Q-2026-001 (assigned at issue)
+  // derived from an accepted offer OR a reservation (exactly one, enforced in code)
+  offerId       String?
+  reservationId String?
+  vehicleId     String
+  userId        String
+  // frozen figures for the document
+  snapshot      Json // line items: purchase / shipping / clearing / handling, CAD + NGN
+  fxRate        Decimal         @db.Decimal(18, 6) // locked rate at issue
+  totalCAD      Decimal         @db.Decimal(14, 2)
+  totalNGN      Decimal         @db.Decimal(18, 2)
+  // external system of record (portfolio quote/invoice platform)
+  externalQuoteId String?
+  externalNumber  String? // human quote number from the platform
+  externalUrl     String? // hosted / PDF link
+  status        QuotationStatus @default(DRAFT)
+  issuedAt      DateTime?
+  validUntil    DateTime?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  offer       Offer?       @relation(fields: [offerId], references: [id])
+  reservation Reservation? @relation(fields: [reservationId], references: [id])
+  vehicle     Vehicle      @relation(fields: [vehicleId], references: [id])
+  user        User         @relation(fields: [userId], references: [id])
+  invoices    Invoice[]
+
+  @@index([vehicleId])
+  @@index([userId])
+  @@index([status])
+  @@index([externalQuoteId])
+}
+
+model Invoice {
+  id          String      @id @default(cuid())
+  number      String?     @unique // native CB-INV-2026-001 (assigned at issue)
+  kind        InvoiceKind
+  userId      String
+  quotationId String? // CAR invoices convert from a quotation; MEMBERSHIP has none
+  currency    Currency    @default(NGN)
+  amount      Decimal     @db.Decimal(18, 2)
+  amountPaid  Decimal     @default(0) @db.Decimal(18, 2)
+  bankInstructions Json? // official business account shown on the invoice
+  // external system of record
+  externalInvoiceId String?
+  externalNumber    String?
+  externalUrl       String?
+  status      InvoiceStatus @default(DRAFT)
+  issuedAt    DateTime?
+  dueAt       DateTime?
+  paidAt      DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id])
+  quotation    Quotation?    @relation(fields: [quotationId], references: [id])
+  payments     Payment[]
+  subscription Subscription? // membership invoice -> the granted subscription
+
+  @@index([userId])
+  @@index([status])
+  @@index([kind])
+  @@index([externalInvoiceId])
+}
+
+model Payment {
+  id        String        @id @default(cuid())
+  invoiceId String
+  reference String        @unique // dedup key: bank transfer ref / platform payment ref
+  amount    Decimal       @db.Decimal(18, 2)
+  currency  Currency      @default(NGN)
+  source    PaymentSource
+  externalPaymentId String?
+  recordedById String? // admin User.id when entered in CarBridge; null for webhook
+  note      String?
+  paidAt    DateTime?
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  invoice    Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  recordedBy User?   @relation(fields: [recordedById], references: [id])
+
+  @@index([invoiceId])
+  @@index([recordedById])
+}
+
+// ------------------------------------------------------------------
+// Document numbering (native CB-Q / CB-INV sequences)
+// ------------------------------------------------------------------
+
+/// Per-year, per-kind atomic counter for CB-Q-2026-001 / CB-INV-2026-001.
+model DocumentCounter {
+  id   String @id @default(cuid())
+  kind String // "QUOTE" | "INVOICE"
+  year Int
+  seq  Int    @default(0)
+
+  @@unique([kind, year])
 }
 
 // ------------------------------------------------------------------

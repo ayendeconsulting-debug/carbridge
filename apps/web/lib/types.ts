@@ -33,6 +33,8 @@ export interface VehicleCardView {
   bodyType: string;
   mileageKm: number;
   conditionGrade: string;
+  transmission: string | null;
+  fuelType: string | null;
   hasClaims: boolean;
   etaLabel: string;
   /** Cover photo (position 0) when present; null falls back to generated art. */
@@ -47,6 +49,7 @@ export interface VehicleCardView {
 
 export interface VehicleDetailView extends VehicleCardView {
   vin: string | null;
+  colour: string | null;
   description: string;
   photos: PhotoView[];
   shippingOptions: ShippingOptionView[];
@@ -183,6 +186,9 @@ export interface AdminVehicleEdit {
   bodyType: string;
   mileageKm: number;
   conditionGrade: string;
+  transmission: string | null;
+  fuelType: string | null;
+  colour: string | null;
   vin: string | null;
   description: string;
   purchasePriceCAD: string;
@@ -226,6 +232,27 @@ export interface MyOfferView {
   vehicle: { id: string; name: string };
 }
 
+export interface MyBankInstructions {
+  bankName: string;
+  accountName: string;
+  accountNumber: string;
+  referenceHint: string | null;
+  note: string | null;
+}
+
+export interface MyReservationBilling {
+  quoteNumber: string | null;
+  quoteStatus: string | null;
+  invoice: {
+    number: string | null;
+    status: string;
+    amountNGN: string;
+    amountPaidNGN: string;
+    dueAt: string | null;
+    bank: MyBankInstructions | null;
+  } | null;
+}
+
 export interface MyReservationView {
   id: string;
   status: string;
@@ -236,6 +263,17 @@ export interface MyReservationView {
   expiresAt: string | null;
   expired: boolean;
   vehicle: { id: string; name: string };
+  billing: MyReservationBilling | null;
+}
+
+export interface MyMembershipInvoiceView {
+  id: string;
+  number: string | null;
+  status: string;
+  amountNGN: string;
+  amountPaidNGN: string;
+  dueAt: string | null;
+  bank: MyBankInstructions | null;
 }
 
 export interface MySubscriptionView {
@@ -282,6 +320,48 @@ export interface MyCarRequestView {
   notes: string | null;
   adminNote: string | null;
   matched: VehicleOption | null;
+}
+
+/* ---- Admin billing (quote -> invoice -> payment) shapes ---- */
+
+export interface AdminBillingRow {
+  reservationId: string;
+  reservationStatus: string;
+  lockedTotalNGN: string;
+  lockedTotalCAD: string;
+  shippingMethod: ShippingMethod;
+  createdAt: string;
+  vehicle: { id: string; name: string };
+  buyer: { email: string; name: string | null };
+  quotation: { id: string; number: string | null; status: string } | null;
+  invoice: {
+    id: string;
+    number: string | null;
+    status: string;
+    amountNGN: string;
+    amountPaidNGN: string;
+    dueAt: string | null;
+  } | null;
+}
+
+/* ---- Admin members (manual Premium) shapes ---- */
+export interface AdminUserView {
+  id: string;
+  email: string;
+  name: string | null;
+  tier: string;
+  premiumExpiresAt: string | null;
+}
+
+export interface AdminMembershipInvoiceView {
+  id: string;
+  number: string | null;
+  status: string;
+  amountNGN: string;
+  amountPaidNGN: string;
+  createdAt: string;
+  dueAt: string | null;
+  buyer: { email: string; name: string | null };
 }
 
 /** Current FX snapshot shape used across the UI and the /api/fx routes. */

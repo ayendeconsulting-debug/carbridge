@@ -7,6 +7,8 @@ import { fmtNGN, fmtCAD } from "@/lib/format";
 import type {
   MyOfferView,
   MyReservationView,
+  MyReservationBilling,
+  MyMembershipInvoiceView,
   MySubscriptionView,
   MyCarRequestView,
   CarWishlist,
@@ -29,6 +31,7 @@ const shortDate = (iso: string) =>
 const STATUS_TONE: Record<string, string> = {
   SUBMITTED: "var(--amber)", COUNTERED: "var(--amber)", PENDING: "var(--amber)", ACTIVE: "var(--stamp)",
   ACCEPTED: "var(--stamp)", CONFIRMED: "var(--stamp)",
+  ISSUED: "var(--frost)", PART_PAID: "var(--amber)", PAID: "var(--stamp)", DRAFT: "var(--steel-dim)", VOID: "var(--steel-dim)",
   DECLINED: "var(--steel-dim)", CANCELLED: "var(--steel-dim)", EXPIRED: "var(--steel-dim)", PAST_DUE: "var(--amber)",
 };
 
@@ -51,12 +54,14 @@ function Field({ k, children, tone }: { k: string; children: React.ReactNode; to
 export function MyActivity({
   tier,
   subscription,
+  membershipInvoice,
   reservations,
   offers,
   carRequests,
 }: {
   tier: string;
   subscription: MySubscriptionView | null;
+  membershipInvoice: MyMembershipInvoiceView | null;
   reservations: MyReservationView[];
   offers: MyOfferView[];
   carRequests: MyCarRequestView[];
@@ -122,6 +127,10 @@ export function MyActivity({
         )}
       </div>
 
+      {membershipInvoice && membershipInvoice.status !== "PAID" && (
+        <MembershipInvoiceBlock inv={membershipInvoice} />
+      )}
+
       {/* Reservations */}
       <SectionLabel>Reservations · {reservations.length}</SectionLabel>
       {reservations.length === 0 && <Empty>You haven&rsquo;t reserved a vehicle yet.</Empty>}
@@ -141,6 +150,7 @@ export function MyActivity({
               {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "—"}
             </Field>
           </div>
+          {r.billing && <BillingBlock b={r.billing} />}
         </div>
       ))}
 
@@ -207,6 +217,108 @@ export function MyActivity({
           {cr.adminNote && <p style={{ color: "var(--steel)", fontSize: 13, marginTop: 6, lineHeight: 1.6 }}>{cr.adminNote}</p>}
         </div>
       ))}
+    </div>
+  );
+}
+
+function MembershipInvoiceBlock({ inv }: { inv: MyMembershipInvoiceView }) {
+  const remaining = Math.max(0, Number(inv.amountNGN) - Number(inv.amountPaidNGN)).toFixed(2);
+  return (
+    <div style={cardStyle}>
+      <div style={rowTop}>
+        <div>
+          <div style={{ fontWeight: 700, color: "var(--frost)" }}>Premium membership invoice</div>
+          <div className="mono" style={metaStyle}>
+            {inv.number ?? inv.id.slice(0, 8)}{inv.dueAt ? ` · due ${shortDate(inv.dueAt)}` : ""}
+          </div>
+        </div>
+        <Badge status={inv.status} />
+      </div>
+      <div style={fieldRow}>
+        <Field k="Amount">{fmtNGN(inv.amountNGN)}</Field>
+        <Field k="Paid">{fmtNGN(inv.amountPaidNGN)}</Field>
+        <Field k="Remaining">{fmtNGN(remaining)}</Field>
+      </div>
+      {inv.bank ? (
+        <div style={{ border: "1px solid var(--rule)", borderRadius: 10, padding: 12, marginTop: 8, background: "rgba(255,255,255,.015)" }}>
+          <div className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)", marginBottom: 8 }}>Pay into</div>
+          <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+            <Field k="Bank">{inv.bank.bankName}</Field>
+            <Field k="Account name">{inv.bank.accountName}</Field>
+            <Field k="Account number">{inv.bank.accountNumber}</Field>
+          </div>
+          {inv.bank.referenceHint && (
+            <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginTop: 10 }}>
+              Quote reference {inv.bank.referenceHint} on your transfer.
+            </p>
+          )}
+          <p style={{ fontSize: 12, color: "var(--steel)", marginTop: 10, lineHeight: 1.6 }}>
+            Transfer {fmtNGN(remaining)} to the account above. Your Premium activates as soon as we confirm the payment.
+          </p>
+        </div>
+      ) : (
+        <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>Payment details will be shared shortly.</p>
+      )}
+    </div>
+  );
+}
+
+function BillingBlock({ b }: { b: MyReservationBilling }) {
+  const inv = b.invoice;
+  const remaining = inv ? Math.max(0, Number(inv.amountNGN) - Number(inv.amountPaidNGN)).toFixed(2) : "0";
+  return (
+    <div style={{ borderTop: "1px solid var(--rule)", marginTop: 12, paddingTop: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+        <span className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)" }}>Billing</span>
+        {b.quoteNumber && <span className="mono" style={{ fontSize: 11, color: "var(--steel)" }}>Quote {b.quoteNumber}</span>}
+        {b.quoteStatus && <Badge status={b.quoteStatus} />}
+      </div>
+
+      {!inv && (
+        <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>
+          Quotation issued — your invoice with payment details will appear here shortly.
+        </p>
+      )}
+
+      {inv && (
+        <div style={{ marginTop: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+            {inv.number && <span className="mono" style={{ fontSize: 12, color: "var(--frost)" }}>Invoice {inv.number}</span>}
+            <Badge status={inv.status} />
+            {inv.dueAt && inv.status !== "PAID" && <span className="mono" style={{ fontSize: 10, color: "var(--steel-dim)" }}>due {shortDate(inv.dueAt)}</span>}
+          </div>
+
+          <div style={fieldRow}>
+            <Field k="Amount">{fmtNGN(inv.amountNGN)}</Field>
+            <Field k="Paid">{fmtNGN(inv.amountPaidNGN)}</Field>
+            {inv.status !== "PAID" && <Field k="Remaining">{fmtNGN(remaining)}</Field>}
+          </div>
+
+          {inv.status === "PAID" ? (
+            <p className="mono" style={{ fontSize: 12, color: "var(--stamp)", marginTop: 8 }}>✓ Payment received in full — your vehicle is confirmed.</p>
+          ) : inv.bank ? (
+            <div style={{ border: "1px solid var(--rule)", borderRadius: 10, padding: 12, marginTop: 10, background: "rgba(255,255,255,.015)" }}>
+              <div className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)", marginBottom: 8 }}>Pay into</div>
+              <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
+                <Field k="Bank">{inv.bank.bankName}</Field>
+                <Field k="Account name">{inv.bank.accountName}</Field>
+                <Field k="Account number">{inv.bank.accountNumber}</Field>
+              </div>
+              {inv.bank.referenceHint && (
+                <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginTop: 10 }}>
+                  Quote reference {inv.bank.referenceHint} on your transfer.
+                </p>
+              )}
+              {inv.bank.note && <p className="mono" style={{ fontSize: 10, color: "var(--steel-dim)", marginTop: 6 }}>{inv.bank.note}</p>}
+              <p style={{ fontSize: 12, color: "var(--steel)", marginTop: 10, lineHeight: 1.6 }}>
+                Transfer {fmtNGN(remaining)} to the account above. We confirm your reservation as soon as the payment lands.
+              </p>
+            </div>
+          ) : (
+            <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>Payment details will be shared shortly.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

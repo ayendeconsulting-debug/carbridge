@@ -1,6 +1,7 @@
-import { Prisma, type BodyType, type ShippingMethod } from "@prisma/client";
+import { Prisma, type BodyType, type ShippingMethod, type Transmission, type FuelType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { adminActor } from "@/lib/admin-guard";
+import { isTransmission, isFuelType, isColour } from "@/lib/vehicle-spec";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,9 @@ export async function POST(req: Request) {
   const conditionGrade = String(body.conditionGrade ?? "").trim();
   const description = String(body.description ?? "").trim();
   const purchasePriceCAD = String(body.purchasePriceCAD ?? "").trim();
+  const transmission = String(body.transmission ?? "").trim();
+  const fuelType = String(body.fuelType ?? "").trim();
+  const colour = String(body.colour ?? "").trim();
   const trim = body.trim ? String(body.trim).trim() : null;
   const vin = body.vin ? String(body.vin).trim().toUpperCase() : null;
   const defaultShippingMethod = METHODS.includes(String(body.defaultShippingMethod))
@@ -56,6 +60,15 @@ export async function POST(req: Request) {
   if (!conditionGrade) {
     return Response.json({ error: "Condition grade is required" }, { status: 400 });
   }
+  if (!isTransmission(transmission)) {
+    return Response.json({ error: "A valid transmission is required" }, { status: 400 });
+  }
+  if (!isFuelType(fuelType)) {
+    return Response.json({ error: "A valid fuel type is required" }, { status: 400 });
+  }
+  if (!isColour(colour)) {
+    return Response.json({ error: "A valid colour is required" }, { status: 400 });
+  }
   if (!description) {
     return Response.json({ error: "Description is required" }, { status: 400 });
   }
@@ -77,6 +90,9 @@ export async function POST(req: Request) {
           bodyType: bodyType as BodyType,
           mileageKm: Math.round(mileageKm),
           conditionGrade,
+          transmission: transmission as Transmission,
+          fuelType: fuelType as FuelType,
+          colour,
           vin,
           description,
           purchasePriceCAD: new Prisma.Decimal(purchasePriceCAD),

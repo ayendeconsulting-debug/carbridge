@@ -1,7 +1,8 @@
-import { Prisma, type BodyType, type ShippingMethod, type VehicleStatus } from "@prisma/client";
+import { Prisma, type BodyType, type ShippingMethod, type VehicleStatus, type Transmission, type FuelType } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { adminActor } from "@/lib/admin-guard";
 import { getVehicleForEdit } from "@/lib/admin-catalog";
+import { isTransmission, isFuelType, isColour } from "@/lib/vehicle-spec";
 
 export const dynamic = "force-dynamic";
 
@@ -95,6 +96,24 @@ export async function PATCH(
     const g = String(body.conditionGrade ?? "").trim();
     if (!g) return Response.json({ error: "Condition grade cannot be empty" }, { status: 400 });
     data.conditionGrade = g;
+  }
+  if (has("transmission")) {
+    const t = String(body.transmission ?? "").trim();
+    if (t === "") data.transmission = null;
+    else if (isTransmission(t)) data.transmission = t as Transmission;
+    else return Response.json({ error: "Invalid transmission" }, { status: 400 });
+  }
+  if (has("fuelType")) {
+    const f = String(body.fuelType ?? "").trim();
+    if (f === "") data.fuelType = null;
+    else if (isFuelType(f)) data.fuelType = f as FuelType;
+    else return Response.json({ error: "Invalid fuel type" }, { status: 400 });
+  }
+  if (has("colour")) {
+    const c = String(body.colour ?? "").trim();
+    if (c === "") data.colour = null;
+    else if (isColour(c)) data.colour = c;
+    else return Response.json({ error: "Invalid colour" }, { status: 400 });
   }
   if (has("vin")) data.vin = body.vin ? String(body.vin).trim().toUpperCase() : null;
   if (has("description")) {

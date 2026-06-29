@@ -3,6 +3,7 @@ import {
   getMyOffers,
   getMyReservations,
   getMySubscription,
+  getMyMembershipInvoice,
   getMyCarRequests,
 } from "@/lib/account";
 import { MyActivity } from "@/components/MyActivity";
@@ -21,10 +22,11 @@ export default async function AccountPage() {
     );
   }
 
-  const [offers, reservations, subscription, carRequests] = await Promise.all([
+  const [offers, reservations, subscription, membershipInvoice, carRequests] = await Promise.all([
     getMyOffers(user.id),
     getMyReservations(user.id),
     getMySubscription(user.id),
+    getMyMembershipInvoice(user.id),
     getMyCarRequests(user.id),
   ]);
 
@@ -32,6 +34,7 @@ export default async function AccountPage() {
     <MyActivity
       tier={user.tier}
       subscription={subscription}
+      membershipInvoice={membershipInvoice}
       reservations={reservations}
       offers={offers}
       carRequests={carRequests}

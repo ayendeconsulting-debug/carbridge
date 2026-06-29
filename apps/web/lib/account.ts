@@ -3,11 +3,32 @@ import { getAuthContext } from "./auth";
 import type {
   MyOfferView,
   MyReservationView,
+  MyReservationBilling,
+  MyBankInstructions,
+  MyMembershipInvoiceView,
   MySubscriptionView,
   MyCarRequestView,
   Currency,
 } from "./types";
 import type { ShippingMethod } from "@carbridge/shared";
+
+/** Defensively read the bank-instructions snapshot frozen onto an invoice. */
+function parseBank(raw: unknown): MyBankInstructions | null {
+  if (!raw || typeof raw !== "object") return null;
+  const o = raw as Record<string, unknown>;
+  const str = (v: unknown) => (typeof v === "string" ? v : null);
+  const bankName = str(o.bankName);
+  const accountName = str(o.accountName);
+  const accountNumber = str(o.accountNumber);
+  if (!bankName && !accountName && !accountNumber) return null;
+  return {
+    bankName: bankName ?? "—",
+    accountName: accountName ?? "—",
+    accountNumber: accountNumber ?? "—",
+    referenceHint: str(o.referenceHint),
+    note: str(o.note),
+  };
+}
 
 /**
  * The current caller, now resolved through getAuthContext() (Clerk session or
@@ -78,20 +99,56 @@ export async function getMyReservations(userId: string): Promise<MyReservationVi
   const rows = await prisma.reservation.findMany({
     where: { userId },
     orderBy: { createdAt: "desc" },
-    include: { vehicle: { select: { id: true, year: true, make: true, model: true } } },
+    include: {
+      vehicle: { select: { id: true, year: true, make: true, model: true } },
+      quotations: {
+        where: { status: { not: "VOID" } },
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        include: {
+          invoices: {
+            where: { status: { not: "VOID" } },
+            orderBy: { createdAt: "desc" },
+            take: 1,
+          },
+        },
+      },
+    },
   });
 
-  return rows.map((r) => ({
-    id: r.id,
-    status: r.status,
-    lockedTotalNGN: r.lockedTotalNGN.toString(),
-    lockedTotalCAD: r.lockedTotalCAD.toString(),
-    shippingMethod: r.shippingMethod as ShippingMethod,
-    createdAt: r.createdAt.toISOString(),
-    expiresAt: r.expiresAt ? r.expiresAt.toISOString() : null,
-    expired: r.expiresAt ? r.expiresAt.getTime() < now : false,
-    vehicle: { id: r.vehicle.id, name: vehicleName(r.vehicle.year, r.vehicle.make, r.vehicle.model) },
-  }));
+  return rows.map((r) => {
+    const q = r.quotations[0] ?? null;
+    const inv = q?.invoices[0] ?? null;
+    const billing: MyReservationBilling | null = q
+      ? {
+          quoteNumber: q.number,
+          quoteStatus: q.status,
+          invoice: inv
+            ? {
+                number: inv.number,
+                status: inv.status,
+                amountNGN: inv.amount.toString(),
+                amountPaidNGN: inv.amountPaid.toString(),
+                dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
+                bank: parseBank(inv.bankInstructions),
+              }
+            : null,
+        }
+      : null;
+
+    return {
+      id: r.id,
+      status: r.status,
+      lockedTotalNGN: r.lockedTotalNGN.toString(),
+      lockedTotalCAD: r.lockedTotalCAD.toString(),
+      shippingMethod: r.shippingMethod as ShippingMethod,
+      createdAt: r.createdAt.toISOString(),
+      expiresAt: r.expiresAt ? r.expiresAt.toISOString() : null,
+      expired: r.expiresAt ? r.expiresAt.getTime() < now : false,
+      vehicle: { id: r.vehicle.id, name: vehicleName(r.vehicle.year, r.vehicle.make, r.vehicle.model) },
+      billing,
+    };
+  });
 }
 
 export async function getMySubscription(userId: string): Promise<MySubscriptionView | null> {
@@ -105,6 +162,25 @@ export async function getMySubscription(userId: string): Promise<MySubscriptionV
     status: sub.status,
     startedAt: sub.startedAt.toISOString(),
     expiresAt: sub.expiresAt.toISOString(),
+  };
+}
+
+export async function getMyMembershipInvoice(
+  userId: string,
+): Promise<MyMembershipInvoiceView | null> {
+  const inv = await prisma.invoice.findFirst({
+    where: { userId, kind: "MEMBERSHIP", status: { not: "VOID" } },
+    orderBy: { createdAt: "desc" },
+  });
+  if (!inv) return null;
+  return {
+    id: inv.id,
+    number: inv.number,
+    status: inv.status,
+    amountNGN: inv.amount.toString(),
+    amountPaidNGN: inv.amountPaid.toString(),
+    dueAt: inv.dueAt ? inv.dueAt.toISOString() : null,
+    bank: parseBank(inv.bankInstructions),
   };
 }
 

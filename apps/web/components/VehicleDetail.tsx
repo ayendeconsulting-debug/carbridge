@@ -3,6 +3,7 @@ import { CarArt } from "./CarArt";
 import { DetailClient } from "./DetailClient";
 import { PhotoGallery } from "./PhotoGallery";
 import { paletteFor, gradeColor } from "@/lib/art";
+import { transmissionLabel, fuelLabel, colourSwatch } from "@/lib/vehicle-spec";
 import type { FxView, Tier, VehicleDetailView } from "@/lib/types";
 
 export function VehicleDetail({
@@ -54,6 +55,9 @@ export function VehicleDetail({
 
         <div className="statgrid" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, margin: "16px 0" }}>
           <Stat k="Odometer" val={`${v.mileageKm.toLocaleString()} km`} />
+          <Stat k="Transmission" val={transmissionLabel(v.transmission)} />
+          <Stat k="Fuel" val={fuelLabel(v.fuelType)} />
+          <Stat k="Colour" val={v.colour ?? "—"} swatch={v.colour ? colourSwatch(v.colour) : undefined} />
           <Stat k="History" val={v.hasClaims ? "1 minor claim" : "Clean · no claims"} tone={v.hasClaims ? "warn" : "ok"} />
           <Stat k="Transit to Lagos" val={v.etaLabel} />
           <Stat k="Clearing" val={v.clearing ? "Quoted ✓" : "Pending"} tone={v.clearing ? "ok" : "warn"} />
@@ -70,12 +74,17 @@ export function VehicleDetail({
   );
 }
 
-function Stat({ k, val, tone }: { k: string; val: string; tone?: "ok" | "warn" }) {
+function Stat({ k, val, tone, swatch }: { k: string; val: string; tone?: "ok" | "warn"; swatch?: string }) {
   const color = tone === "ok" ? "var(--stamp)" : tone === "warn" ? "var(--amber)" : "var(--frost)";
   return (
     <div style={{ border: "1px solid var(--rule)", borderRadius: 10, padding: "11px 13px", background: "rgba(255,255,255,.02)" }}>
       <div className="mono" style={{ fontSize: 8.5, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)" }}>{k}</div>
-      <div style={{ fontWeight: 600, marginTop: 5, color, fontSize: 14 }}>{val}</div>
+      <div style={{ fontWeight: 600, marginTop: 5, color, fontSize: 14, display: "flex", alignItems: "center", gap: 7 }}>
+        {swatch && (
+          <span style={{ width: 12, height: 12, borderRadius: "50%", background: swatch, border: "1px solid rgba(255,255,255,.25)", flexShrink: 0 }} />
+        )}
+        {val}
+      </div>
     </div>
   );
 }

@@ -3,6 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { fmtNGN, fmtCAD } from "@/lib/format";
+import {
+  TRANSMISSIONS,
+  FUEL_TYPES,
+  COLOURS,
+  TRANSMISSION_LABEL,
+  FUEL_LABEL,
+} from "@/lib/vehicle-spec";
 import type {
   AdminVehicleListItem,
   AdminVehicleEdit,
@@ -96,6 +103,9 @@ interface CoreForm {
   bodyType: string;
   mileageKm: string;
   conditionGrade: string;
+  transmission: string;
+  fuelType: string;
+  colour: string;
   vin: string;
   description: string;
   purchasePriceCAD: string;
@@ -105,7 +115,8 @@ interface CoreForm {
 
 const BLANK: CoreForm = {
   make: "", model: "", year: "", trim: "", bodyType: "SUV", mileageKm: "",
-  conditionGrade: "", vin: "", description: "", purchasePriceCAD: "",
+  conditionGrade: "", transmission: "", fuelType: "", colour: "",
+  vin: "", description: "", purchasePriceCAD: "",
   defaultShippingMethod: "RORO", handlingRateOverride: "",
 };
 
@@ -113,6 +124,7 @@ function formFrom(v: AdminVehicleEdit): CoreForm {
   return {
     make: v.make, model: v.model, year: String(v.year), trim: v.trim ?? "",
     bodyType: v.bodyType, mileageKm: String(v.mileageKm), conditionGrade: v.conditionGrade,
+    transmission: v.transmission ?? "", fuelType: v.fuelType ?? "", colour: v.colour ?? "",
     vin: v.vin ?? "", description: v.description, purchasePriceCAD: v.purchasePriceCAD,
     defaultShippingMethod: v.defaultShippingMethod,
     handlingRateOverride: v.handlingRateOverride ?? "",
@@ -216,6 +228,10 @@ export function AdminCatalog({ vehicles }: { vehicles: AdminVehicleListItem[] })
   }
 
   async function saveCore() {
+    if (!form.transmission || !form.fuelType || !form.colour) {
+      setError("Transmission, fuel type and colour are required.");
+      return;
+    }
     const payload = {
       make: form.make,
       model: form.model,
@@ -224,6 +240,9 @@ export function AdminCatalog({ vehicles }: { vehicles: AdminVehicleListItem[] })
       bodyType: form.bodyType,
       mileageKm: Number(form.mileageKm),
       conditionGrade: form.conditionGrade,
+      transmission: form.transmission,
+      fuelType: form.fuelType,
+      colour: form.colour,
       vin: form.vin || null,
       description: form.description,
       purchasePriceCAD: form.purchasePriceCAD,
@@ -419,6 +438,26 @@ export function AdminCatalog({ vehicles }: { vehicles: AdminVehicleListItem[] })
           <Field><span style={label}>Condition grade</span><input style={input} placeholder="A, A-, B+…" value={form.conditionGrade} onChange={(e) => setForm({ ...form, conditionGrade: e.target.value })} /></Field>
           <Field><span style={label}>VIN (optional)</span><input style={input} value={form.vin} onChange={(e) => setForm({ ...form, vin: e.target.value })} /></Field>
         </Row>
+        <Row>
+          <Field><span style={label}>Transmission</span>
+            <select style={input} value={form.transmission} onChange={(e) => setForm({ ...form, transmission: e.target.value })}>
+              <option value="" style={opt} disabled>Select…</option>
+              {TRANSMISSIONS.map((t) => <option key={t} value={t} style={opt}>{TRANSMISSION_LABEL[t]}</option>)}
+            </select>
+          </Field>
+          <Field><span style={label}>Fuel type</span>
+            <select style={input} value={form.fuelType} onChange={(e) => setForm({ ...form, fuelType: e.target.value })}>
+              <option value="" style={opt} disabled>Select…</option>
+              {FUEL_TYPES.map((f) => <option key={f} value={f} style={opt}>{FUEL_LABEL[f]}</option>)}
+            </select>
+          </Field>
+        </Row>
+        <Field><span style={label}>Colour</span>
+          <select style={input} value={form.colour} onChange={(e) => setForm({ ...form, colour: e.target.value })}>
+            <option value="" style={opt} disabled>Select colour…</option>
+            {COLOURS.map((c) => <option key={c} value={c} style={opt}>{c}</option>)}
+          </select>
+        </Field>
         <Row>
           <Field><span style={label}>Purchase price (CAD)</span><input style={input} inputMode="decimal" value={form.purchasePriceCAD} onChange={(e) => setForm({ ...form, purchasePriceCAD: e.target.value })} /></Field>
           <Field><span style={label}>Default shipping</span>
