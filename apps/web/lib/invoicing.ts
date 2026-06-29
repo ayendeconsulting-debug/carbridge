@@ -240,6 +240,26 @@ export async function issueMembershipInvoice(
   return { ok: true, invoiceId: invoice.id, number };
 }
 
+/** Self-serve helper: reuse the buyer's open (unpaid) membership invoice if one
+ *  exists, otherwise issue a fresh one. Prevents duplicate invoices when a buyer
+ *  clicks "Get Premium" more than once. */
+export async function issueOrReuseMembershipInvoice(
+  userId: string,
+  amountNGN: string,
+  actorId: string | null,
+): Promise<ServiceResult<{ invoiceId: string; number: string; reused: boolean }>> {
+  const open = await prisma.invoice.findFirst({
+    where: { userId, kind: "MEMBERSHIP", status: { notIn: ["PAID", "VOID"] } },
+    orderBy: { createdAt: "desc" },
+    select: { id: true, number: true },
+  });
+  if (open) return { ok: true, invoiceId: open.id, number: open.number ?? "", reused: true };
+
+  const r = await issueMembershipInvoice(userId, amountNGN, actorId);
+  if (!r.ok) return r;
+  return { ok: true, invoiceId: r.invoiceId, number: r.number, reused: false };
+}
+
 export interface RecordPaymentInput {
   amount: string; // NGN decimal string
   reference: string; // dedup key (bank transfer reference)

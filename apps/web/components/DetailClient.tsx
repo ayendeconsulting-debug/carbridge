@@ -1,10 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useFxRate } from "./useFxRate";
 import { detailLedger, fmtNGN, fmtCAD, rateLabel } from "@/lib/format";
-import { TIER_COOKIE } from "@/lib/constants";
 import type { ShippingMethod } from "@carbridge/shared";
 import type {
   Currency,
@@ -47,7 +46,6 @@ export function DetailClient({
   tier: Tier;
 }) {
   const live = useFxRate(fx);
-  const router = useRouter();
   const methods = useMemo(
     () => Array.from(new Set(v.shippingOptions.map((o) => o.method))) as ShippingMethod[],
     [v.shippingOptions],
@@ -68,12 +66,6 @@ export function DetailClient({
   const ledger = detailLedger(v, method, live.effectiveRate);
   const line = (key: string) => ledger.lines.find((l) => l.key === key);
   const isPremium = tier === "PREMIUM";
-
-  const goPremium = () => {
-    document.cookie = `${TIER_COOKIE}=PREMIUM; path=/; max-age=${60 * 60 * 24 * 30}`;
-    setGate(false);
-    router.refresh();
-  };
 
   const closeSheet = () => {
     if (submitting) return;
@@ -221,7 +213,7 @@ export function DetailClient({
               {!isPremium && <LockIcon />}Make offer
             </button>
             <button className="btn btn-buy" onClick={openBuy}>
-              {!isPremium && <LockIcon />}Buy now
+              {!isPremium && <LockIcon />}Reserve
             </button>
           </div>
         )}
@@ -234,9 +226,9 @@ export function DetailClient({
             <p style={{ color: "var(--steel)", marginBottom: 18 }}>
               Buy Now and Make an Offer — with a 72-hour rate lock — are Premium features. Browsing stays free.
             </p>
-            <button className="btn btn-buy" style={{ width: "100%" }} onClick={goPremium}>
-              Switch to Premium (demo)
-            </button>
+            <Link href="/upgrade" className="btn btn-buy" style={{ width: "100%", textDecoration: "none", display: "block", textAlign: "center" }} onClick={() => setGate(false)}>
+              See Premium plans
+            </Link>
           </div>
         </div>
       )}

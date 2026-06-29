@@ -1,5 +1,5 @@
 import { AppHeader } from "@/components/AppHeader";
-import { getTier } from "@/lib/tier";
+import { getAuthContext } from "@/lib/auth";
 import { getCurrentSnapshot } from "@/lib/fx";
 import type { ReactNode } from "react";
 
@@ -12,10 +12,10 @@ export default async function ShopLayout({
   children: ReactNode;
   modal: ReactNode;
 }) {
-  const [tier, fx] = await Promise.all([getTier(), getCurrentSnapshot()]);
+  const [ctx, fx] = await Promise.all([getAuthContext(), getCurrentSnapshot()]);
   return (
     <div className="app">
-      <AppHeader fx={fx} tier={tier} />
+      <AppHeader fx={fx} tier={ctx.tier} isAdmin={ctx.isAdmin} />
       {children}
       {modal}
     </div>

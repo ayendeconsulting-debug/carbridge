@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
 import { Show, SignInButton, UserButton } from "@clerk/nextjs";
 import { useFxRate } from "./useFxRate";
@@ -15,9 +15,15 @@ const TIERS: { key: Tier; label: string }[] = [
   { key: "PREMIUM", label: "Premium" },
 ];
 
-export function AppHeader({ fx, tier }: { fx: FxView; tier: Tier }) {
+export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tier; isAdmin?: boolean }) {
   const live = useFxRate(fx);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const navOn = (href: string) =>
+    href === "/gallery"
+      ? pathname.startsWith("/gallery") || pathname.startsWith("/vehicles")
+      : pathname.startsWith(href);
 
   const setTier = (t: Tier) => {
     document.cookie = `${TIER_COOKIE}=${t}; path=/; max-age=${60 * 60 * 24 * 30}`;
@@ -72,6 +78,14 @@ export function AppHeader({ fx, tier }: { fx: FxView; tier: Tier }) {
           )}
         </div>
       </div>
+
+      <nav className="hnav">
+        <Link href="/gallery" className={`navlink${navOn("/gallery") ? " on" : ""}`}>Gallery</Link>
+        <Link href="/account" className={`navlink${navOn("/account") ? " on" : ""}`}>Activity</Link>
+        {isAdmin && (
+          <Link href="/admin" className={`navlink admin${navOn("/admin") ? " on" : ""}`}>Admin</Link>
+        )}
+      </nav>
 
       <div className="fx">
         <span className="dot" />

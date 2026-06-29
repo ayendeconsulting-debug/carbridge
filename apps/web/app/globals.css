@@ -44,10 +44,18 @@ header{position:sticky;top:0;z-index:40;background:rgba(11,20,19,.86);backdrop-f
   display:grid;place-items:center;font-family:'Merriweather';font-weight:700;font-size:12px;color:var(--frost);
   border:1px solid var(--rule)}
 
+/* primary nav strip */
+.hnav{display:flex;align-items:center;gap:20px;padding:0 18px 11px}
+.navlink{font-family:'Spline Sans Mono';font-size:10px;letter-spacing:1.2px;text-transform:uppercase;
+  color:var(--steel);text-decoration:none;padding:3px 0;border-bottom:2px solid transparent;transition:color .15s}
+.navlink:hover{color:var(--frost)}
+.navlink.on{color:var(--amber);border-bottom-color:var(--amber)}
+.navlink.admin{margin-left:auto;color:var(--steel-dim)}
+.navlink.admin:hover{color:var(--frost)}
+
 /* fx strip */
 .fx{display:flex;align-items:center;gap:9px;padding:9px 18px;background:rgba(15,76,74,.12);
-  border-top:1px solid var(--rule-2)}
-.dot{width:7px;height:7px;border-radius:50%;background:var(--amber);position:relative;flex-shrink:0}
+  border-top:1px solid var(--rule-2)}.dot{width:7px;height:7px;border-radius:50%;background:var(--amber);position:relative;flex-shrink:0}
 .dot::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--amber);animation:pulse 1.8s ease-out infinite}
 @keyframes pulse{0%{transform:scale(.6);opacity:.9}100%{transform:scale(2.2);opacity:0}}
 .fx .rate{font-family:'Spline Sans Mono';font-size:12.5px;font-weight:600;color:var(--frost);letter-spacing:.2px}
@@ -210,7 +218,7 @@ header{position:sticky;top:0;z-index:40;background:rgba(11,20,19,.86);backdrop-f
 /* sticky action bar */
 .actionbar{position:fixed;bottom:0;left:0;right:0;max-width:480px;margin:0 auto;z-index:62;
   background:rgba(11,20,19,.9);backdrop-filter:blur(14px);border-top:1px solid var(--rule);
-  padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:none;gap:11px;align-items:center}
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom));display:flex;gap:11px;align-items:center}
 .overlay.open .actionbar{display:flex}
 .act-price .k{font-family:'Spline Sans Mono';font-size:7.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--steel-dim)}
 .act-price .v{font-family:'Spline Sans Mono';font-weight:700;font-size:16px;color:var(--amber);margin-top:2px}

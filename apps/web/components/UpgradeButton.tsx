@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { TIER_COOKIE } from "@/lib/constants";
-import type { CheckoutResult } from "@/lib/types";
 
-export function UpgradeButton({ label = "Go Premium" }: { label?: string }) {
+// Self-serve Premium: requests a membership invoice for the signed-in buyer,
+// then sends them to "My activity" to view bank details and pay. No checkout,
+// no self-activation — an admin grants Premium once payment is confirmed.
+export function UpgradeButton({ label = "Get Premium" }: { label?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -14,22 +15,22 @@ export function UpgradeButton({ label = "Go Premium" }: { label?: string }) {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/subscriptions/checkout", { method: "POST" });
-      const data = (await res.json()) as CheckoutResult;
+      const res = await fetch("/api/memberships/request", { method: "POST" });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        alreadyPremium?: boolean;
+        invoiceId?: string;
+      };
       if (!res.ok) {
-        setError(data.error ?? "Could not start checkout.");
+        setError(data.error ?? "Could not start your membership request.");
         return;
       }
       if (data.alreadyPremium) {
-        document.cookie = `${TIER_COOKIE}=PREMIUM; path=/; max-age=${60 * 60 * 24 * 30}`;
         router.refresh();
         return;
       }
-      if (data.authorizationUrl) {
-        window.location.href = data.authorizationUrl;
-        return;
-      }
-      setError("Unexpected response from checkout.");
+      // Invoice issued (or an open one reused) — go pay it in My activity.
+      router.push("/account");
     } catch {
       setError("Network error — please try again.");
     } finally {
@@ -40,7 +41,7 @@ export function UpgradeButton({ label = "Go Premium" }: { label?: string }) {
   return (
     <div>
       <button className="btn btn-buy" style={{ width: "100%" }} onClick={start} disabled={busy}>
-        {busy ? "Starting checkout…" : label}
+        {busy ? "Setting up…" : label}
       </button>
       {error && <p style={{ color: "var(--amber)", fontSize: 13, marginTop: 10 }}>{error}</p>}
     </div>

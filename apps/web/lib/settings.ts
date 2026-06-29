@@ -32,3 +32,26 @@ export function invoiceDueDays(): number {
   const raw = Number(process.env.CB_INVOICE_DUE_DAYS);
   return Number.isFinite(raw) && raw > 0 ? Math.round(raw) : 7;
 }
+
+/**
+ * Published Premium membership price (NGN), used by the self-serve /upgrade
+ * flow to issue a membership invoice without an admin in the loop. `configured`
+ * is false when the env value is missing/invalid, so the UI can fall back to a
+ * "contact us" message rather than quote ₦0.
+ */
+export interface MembershipPrice {
+  amountNGN: string;
+  termLabel: string;
+  configured: boolean;
+}
+
+export function getMembershipPrice(): MembershipPrice {
+  const raw = (process.env.CB_MEMBERSHIP_PRICE_NGN ?? "").trim();
+  const n = Number(raw);
+  const configured = Number.isFinite(n) && n > 0;
+  return {
+    amountNGN: configured ? String(n) : "0",
+    termLabel: (process.env.CB_MEMBERSHIP_TERM_LABEL || "per year").trim(),
+    configured,
+  };
+}

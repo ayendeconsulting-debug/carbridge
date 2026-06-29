@@ -1,5 +1,4 @@
 import {
-  isAdmin,
   listOffersForAdmin,
   listReservationsForAdmin,
   listCarRequestsForAdmin,
@@ -8,18 +7,23 @@ import {
 import { listVehiclesForAdmin } from "@/lib/admin-catalog";
 import { listBillingForAdmin } from "@/lib/billing";
 import { listUsersForAdmin, listMembershipInvoicesForAdmin } from "@/lib/memberships";
+import { getAuthContext } from "@/lib/auth";
+import { getCurrentSnapshot } from "@/lib/fx";
+import { AppHeader } from "@/components/AppHeader";
 import { AdminGate } from "@/components/AdminGate";
 import { AdminTabs } from "@/components/AdminTabs";
 
 export const dynamic = "force-dynamic";
 
 export default async function AdminPage() {
-  if (!(await isAdmin())) {
+  const ctx = await getAuthContext();
+  if (!ctx.isAdmin) {
     return <AdminGate />;
   }
 
-  const [offers, reservations, carRequests, matchable, vehicles, billing, users, memberships] =
+  const [fx, offers, reservations, carRequests, matchable, vehicles, billing, users, memberships] =
     await Promise.all([
+      getCurrentSnapshot(),
       listOffersForAdmin(),
       listReservationsForAdmin(),
       listCarRequestsForAdmin(),
@@ -31,15 +35,18 @@ export default async function AdminPage() {
     ]);
 
   return (
-    <AdminTabs
-      offers={offers}
-      reservations={reservations}
-      carRequests={carRequests}
-      matchable={matchable}
-      vehicles={vehicles}
-      billing={billing}
-      users={users}
-      memberships={memberships}
-    />
+    <div className="app">
+      <AppHeader fx={fx} tier={ctx.tier} isAdmin={ctx.isAdmin} />
+      <AdminTabs
+        offers={offers}
+        reservations={reservations}
+        carRequests={carRequests}
+        matchable={matchable}
+        vehicles={vehicles}
+        billing={billing}
+        users={users}
+        memberships={memberships}
+      />
+    </div>
   );
 }
