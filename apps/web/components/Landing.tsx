@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { VehicleCard } from "@/components/VehicleCard";
+import type { FxView, VehicleCardView } from "@/lib/types";
 
 /* ------------------------------------------------------------------ */
 /* Static teaser data (marketing). Real inventory loads in Stage 2.   */
@@ -9,31 +11,6 @@ import Link from "next/link";
 
 const FORD = { p: 17900, s: 1750, c: 2600000 }; // hero ledger = 2017 Ford Edge
 const H = 0.12;
-
-type Feat = {
-  id: number;
-  name: string;
-  year: number;
-  trim: string;
-  body: string;
-  km: number;
-  grade: string;
-  gc: string;
-  clean: boolean;
-  eta: string;
-  p: number;
-  roro: number;
-  clr: number;
-  g1: string;
-  g2: string;
-  art: string;
-};
-
-const FEATURED: Feat[] = [
-  { id: 1, name: "Toyota RAV4 XLE", year: 2019, trim: "AWD", body: "SUV", km: 78400, grade: "A", gc: "#3E8E78", clean: true, eta: "6–8 wk", p: 26900, roro: 1650, clr: 3100000, g1: "#16302B", g2: "#0E211E", art: "#4E8E78" },
-  { id: 2, name: "Honda Accord Touring", year: 2018, trim: "2.0T", body: "Sedan", km: 96200, grade: "B+", gc: "#6E8A86", clean: true, eta: "6–8 wk", p: 21500, roro: 1450, clr: 2400000, g1: "#152A2E", g2: "#0E2023", art: "#5E8088" },
-  { id: 3, name: "Lexus RX 350", year: 2020, trim: "AWD Premium", body: "SUV", km: 64800, grade: "A", gc: "#3E8E78", clean: true, eta: "7–9 wk", p: 41800, roro: 1850, clr: 3600000, g1: "#1A2C28", g2: "#11211D", art: "#8A7A52" },
-];
 
 const FAQS: [string, string][] = [
   ["How is the landed cost worked out?", "It's the purchase price plus ocean shipping, plus the Lagos clearing quote, plus our 12% handling fee. Every line is shown in dollars and naira, and the total updates live as the exchange rate moves."],
@@ -47,19 +24,6 @@ const FAQS: [string, string][] = [
 /* ------------------------------------------------------------------ */
 /* Bits                                                               */
 /* ------------------------------------------------------------------ */
-
-function CarArt({ color }: { color: string }) {
-  return (
-    <svg className="carart" viewBox="0 0 200 90" fill="none">
-      <path d="M18 62l8-22c2.5-7 9-11 16.5-11h63c6 0 11.7 2.7 15.2 7.5L148 58l24 5c6 1.3 10 6.6 10 12.7V80a4 4 0 01-4 4h-12" stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity=".9" />
-      <path d="M18 62h-4a4 4 0 00-4 4v10a4 4 0 004 4h10" stroke={color} strokeWidth="4" strokeLinecap="round" />
-      <path d="M58 84h54" stroke={color} strokeWidth="4" strokeLinecap="round" />
-      <circle cx="48" cy="84" r="13" stroke={color} strokeWidth="4" />
-      <circle cx="142" cy="84" r="13" stroke={color} strokeWidth="4" />
-      <path d="M40 30l-6 18h54l-12-18z" stroke={color} strokeWidth="3.5" strokeLinejoin="round" opacity=".7" />
-    </svg>
-  );
-}
 
 const Logo = () => (
   <div className="logo">
@@ -79,38 +43,6 @@ const Arrow = () => (
 
 const fmtCAD = (n: number) => "$" + Math.round(n).toLocaleString("en-CA");
 const fmtNGNraw = (n: number) => Math.round(n).toLocaleString("en-NG");
-
-function FeatCard({ c }: { c: Feat }) {
-  const sub = (c.p + c.roro) * 1150 + c.clr;
-  const total = sub * (1 + H);
-  return (
-    <div className="card">
-      <div className="photo" style={{ background: `linear-gradient(135deg,${c.g1},${c.g2})` }}>
-        <CarArt color={c.art} />
-        <span className="bl-tag">B/L · CB-{c.id}04{c.year % 100}</span>
-        <span className="grade" style={{ background: c.gc }}>{c.grade}</span>
-      </div>
-      <div className="cbody">
-        <div className="cname">{c.name}</div>
-        <div className="cyear">{c.year} · {c.trim} · {c.body}</div>
-        <div className="cspecs">
-          <span className="chip">{c.km.toLocaleString()} km</span>
-          <span className={`chip ${c.clean ? "ok" : "warn"}`}>{c.clean ? "Clean" : "1 claim"}</span>
-          <span className="chip">{c.eta}</span>
-        </div>
-        <div className="cland">
-          <div>
-            <div className="lab">Total landed · Lagos</div>
-            <div className="ngn" id={`featNgn-${c.id}`}>₦{fmtNGNraw(total)}</div>
-            <div className="cad" id={`featCad-${c.id}`}>{fmtCAD(total / 1150)} CAD</div>
-          </div>
-          <div className="incl">incl.<br />12% fee</div>
-        </div>
-        <Link href="/gallery" className="cbtn"><Arrow />View manifest</Link>
-      </div>
-    </div>
-  );
-}
 
 function FaqList() {
   const [open, setOpen] = useState<number | null>(0);
@@ -167,7 +99,7 @@ function LandingNav() {
 /* Landing                                                            */
 /* ------------------------------------------------------------------ */
 
-export function Landing() {
+export function Landing({ recent, fx, favoritedIds = [] }: { recent: VehicleCardView[]; fx: FxView; favoritedIds?: string[] }) {
   // Hero ledger animates imperatively (matches the mockup) so it never
   // re-renders with React state. FAQ owns its own state in <FaqList/>.
   useEffect(() => {
@@ -253,12 +185,6 @@ export function Landing() {
       const odo = document.getElementById("h_odo");
       if (odo) setOdometer(odo, fmtNGNraw(total));
       tween("h_totCad", totalCAD, fmtCAD);
-      FEATURED.forEach((c) => {
-        const sub2 = (c.p + c.roro) * hr + c.clr;
-        const tot = sub2 * (1 + H);
-        tween(`featNgn-${c.id}`, tot, (x) => "₦" + fmtNGNraw(x));
-        tween(`featCad-${c.id}`, tot / hr, (x) => fmtCAD(x) + " CAD");
-      });
       const t = document.getElementById("t_rate");
       if (t) t.textContent = "1 CAD = ₦" + hr.toLocaleString("en-NG");
       heroLast = Date.now();
@@ -398,6 +324,7 @@ export function Landing() {
           </div>
         </section>
 
+        {recent.length > 0 && (
         <section className="section">
           <div className="feat-head">
             <div>
@@ -407,9 +334,12 @@ export function Landing() {
             <Link className="viewall" href="/gallery">View all inventory<Arrow /></Link>
           </div>
           <div className="feat-grid">
-            {FEATURED.map((c) => <FeatCard c={c} key={c.id} />)}
+            {recent.map((c) => (
+              <VehicleCard key={c.id} v={c} fx={fx} favorited={favoritedIds.includes(c.id)} />
+            ))}
           </div>
         </section>
+        )}
 
         <section className="section">
           <div className="sec-eyebrow">Questions</div>
