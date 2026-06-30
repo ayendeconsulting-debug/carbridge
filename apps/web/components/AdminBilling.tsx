@@ -153,7 +153,7 @@ export function AdminBilling({ billing }: { billing: AdminBillingRow[] }) {
         return;
       }
       const advanced = (j as { reservationAdvanced?: boolean }).reservationAdvanced;
-      setNotice(advanced ? "Payment recorded — paid in full, vehicle marked SOLD." : "Payment recorded.");
+      setNotice(advanced ? "Payment recorded - paid in full, vehicle marked SOLD." : "Payment recorded.");
       router.refresh();
     } catch {
       setError("Network error");
@@ -230,7 +230,7 @@ export function AdminBilling({ billing }: { billing: AdminBillingRow[] }) {
               )}
 
               {!q && !reservationActive && (
-                <span className="mono" style={{ fontSize: 11, color: "var(--steel-dim)" }}>Reservation {row.reservationStatus.toLowerCase()} — nothing to bill.</span>
+                <span className="mono" style={{ fontSize: 11, color: "var(--steel-dim)" }}>Reservation {row.reservationStatus.toLowerCase()} - nothing to bill.</span>
               )}
 
               {q && !inv && q.status === "ACCEPTED" && (

@@ -1,11 +1,11 @@
-// @carbridge payments — a swappable payment-provider interface, mirroring the
+// @carbridge payments - a swappable payment-provider interface, mirroring the
 // FxProvider pattern. The app talks to this interface only; Paystack vs stub
 // (vs a future Flutterwave/Stripe adapter) is a one-line swap in selectProvider.
 
 export type ChargeStatus = "success" | "failed" | "pending" | "unknown";
 
 export interface InitCheckoutInput {
-  /** Buyer email — required by Paystack to initialise a transaction. */
+  /** Buyer email - required by Paystack to initialise a transaction. */
   email: string;
   /** Amount in kobo (integer minor unit; never floats). */
   amountKobo: number;

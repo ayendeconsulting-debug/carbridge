@@ -2,7 +2,7 @@
 // Imported by the admin editor, the gallery filters, the detail specs grid, and
 // the create/edit API validators so none of them can drift apart.
 //
-// Pure module — no imports — so it type-checks anywhere (client or server).
+// Pure module - no imports - so it type-checks anywhere (client or server).
 
 export const TRANSMISSIONS = ["AUTOMATIC", "MANUAL"] as const;
 export type TransmissionValue = (typeof TRANSMISSIONS)[number];
@@ -10,8 +10,8 @@ export type TransmissionValue = (typeof TRANSMISSIONS)[number];
 export const FUEL_TYPES = ["PETROL", "DIESEL", "HYBRID", "ELECTRIC"] as const;
 export type FuelValue = (typeof FUEL_TYPES)[number];
 
-// Canonical colour palette (fixed dropdown). "Other" is a terminal value — no
-// free-text capture — matching the agreed palette-only design.
+// Canonical colour palette (fixed dropdown). "Other" is a terminal value - no
+// free-text capture - matching the agreed palette-only design.
 export const COLOURS = [
   "Black",
   "White",
@@ -63,10 +63,10 @@ export const isFuelType = (v: string): boolean =>
 export const isColour = (v: string): boolean =>
   (COLOURS as readonly string[]).includes(v);
 
-/** Display helpers — fall back to a dash when the value is null/unknown. */
+/** Display helpers - fall back to a dash when the value is null/unknown. */
 export const transmissionLabel = (v: string | null): string =>
-  v ? (TRANSMISSION_LABEL[v] ?? v) : "—";
+  v ? (TRANSMISSION_LABEL[v] ?? v) : "-";
 export const fuelLabel = (v: string | null): string =>
-  v ? (FUEL_LABEL[v] ?? v) : "—";
+  v ? (FUEL_LABEL[v] ?? v) : "-";
 export const colourSwatch = (v: string | null): string =>
   v ? (COLOUR_SWATCH[v] ?? COLOUR_SWATCH.Other) : "transparent";

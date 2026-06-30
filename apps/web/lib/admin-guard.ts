@@ -1,7 +1,7 @@
 import { getAuthContext } from "./auth";
 
 export interface AdminActor {
-  /** DB User.id of the admin, when resolvable — written to AuditLog.actorId. */
+  /** DB User.id of the admin, when resolvable - written to AuditLog.actorId. */
   actorId: string | null;
 }
 

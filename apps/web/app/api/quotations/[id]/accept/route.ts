@@ -3,7 +3,7 @@ import { getCurrentUser } from "@/lib/account";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/quotations/[id]/accept — buyer accepts their issued quotation. This
+// POST /api/quotations/[id]/accept - buyer accepts their issued quotation. This
 // is the gate the admin needs before invoicing. Owner-checked inside the lib fn.
 export async function POST(
   _req: Request,

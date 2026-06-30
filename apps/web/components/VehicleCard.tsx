@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { CarArt } from "./CarArt";
+import { FavoriteHeart } from "./FavoriteHeart";
 import { useFxRate } from "./useFxRate";
 import { cardTotal } from "@/lib/format";
 import { paletteFor, gradeColor } from "@/lib/art";
 import type { FxView, VehicleCardView } from "@/lib/types";
 
-export function VehicleCard({ v, fx }: { v: VehicleCardView; fx: FxView }) {
+export function VehicleCard({ v, fx, favorited }: { v: VehicleCardView; fx: FxView; favorited?: boolean }) {
   const live = useFxRate(fx);
   const total = cardTotal(v, live.effectiveRate);
   const pal = paletteFor(v.id);
@@ -36,6 +37,9 @@ export function VehicleCard({ v, fx }: { v: VehicleCardView; fx: FxView }) {
         )}
         <span className="bl-tag">B/L · CB-{v.id.slice(0, 5).toUpperCase()}</span>
         <span className="grade" style={{ background: gradeColor(v.conditionGrade) }}>{v.conditionGrade}</span>
+        <span style={{ position: "absolute", top: 10, right: 10, zIndex: 3 }}>
+          <FavoriteHeart vehicleId={v.id} initial={favorited} size={18} />
+        </span>
       </div>
       <div className="cbody">
         <div className="cname">{v.make} {v.model}</div>

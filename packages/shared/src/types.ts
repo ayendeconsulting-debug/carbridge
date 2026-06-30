@@ -17,7 +17,7 @@ export interface LandedCostInput {
   purchasePriceCAD: DecimalInput;
   /** Selected shipping method's cost in CAD (RoRo or container). */
   shippingCostCAD: DecimalInput;
-  /** Clearing cost in NGN — manual agent quotation, held fixed in naira. */
+  /** Clearing cost in NGN - manual agent quotation, held fixed in naira. */
   clearingCostNGN: DecimalInput;
   /** Effective FX rate: NGN per 1 CAD (post-spread). Must be > 0. */
   fxRate: DecimalInput;
@@ -72,7 +72,7 @@ export interface SerializedMoney {
   ngn: string;
 }
 
-/** JSON-safe, rounded to each currency's minor unit — the authoritative stored figures. */
+/** JSON-safe, rounded to each currency's minor unit - the authoritative stored figures. */
 export interface SerializedBreakdown {
   fxRate: string;
   handlingRate: string;

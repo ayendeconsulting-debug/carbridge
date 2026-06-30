@@ -5,7 +5,7 @@
  * Deliberately NOT rebranded (invisible to users, left as internal codenames):
  * the `@carbridge/*` workspace packages, `CB_*` env keys, the repo, and the
  * Vercel project. Renaming those is a large refactor with zero user-visible
- * gain — see the rebrand decision in the session handover.
+ * gain - see the rebrand decision in the session handover.
  *
  * Pure constants only (no `server-only`) so client components can import it.
  */

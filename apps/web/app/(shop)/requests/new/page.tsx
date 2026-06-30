@@ -14,7 +14,7 @@ export default async function SourceACarPage() {
         <h2 className="exp" style={{ fontSize: 22, fontWeight: 800, marginTop: 6 }}>Source a car</h2>
       </div>
       <p style={{ color: "var(--steel)", margin: "0 4px 22px", maxWidth: 520 }}>
-        Can't find it in inventory? Tell us what you're after and your budget, and our team will hunt for a match in Canada — then come back with a fully landed quote.
+        Can't find it in inventory? Tell us what you're after and your budget, and our team will hunt for a match in Canada - then come back with a fully landed quote.
       </p>
 
       {tier === "PREMIUM" ? (

@@ -19,7 +19,7 @@ import type {
 /**
  * Resize an image to a max edge in the browser and re-encode to JPEG, keeping
  * uploads small enough to post through a serverless function (Blob put() runs
- * server-side on OIDC — no read-write token needed).
+ * server-side on OIDC - no read-write token needed).
  */
 async function downscaleImage(file: File, maxEdge = 1920, quality = 0.85): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
@@ -497,7 +497,7 @@ export function AdminCatalog({ vehicles }: { vehicles: AdminVehicleListItem[] })
 
           <Section title={`Photos · ${editing.photos.length}/12`}>
             {editing.photos.length === 0 ? (
-              <p style={{ color: "var(--steel-dim)", marginBottom: 12 }}>No photos yet — the gallery shows generated art until you add one.</p>
+              <p style={{ color: "var(--steel-dim)", marginBottom: 12 }}>No photos yet - the gallery shows generated art until you add one.</p>
             ) : (
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(120px, 1fr))", gap: 10, marginBottom: 12 }}>
                 {editing.photos.map((p, i) => (
@@ -570,7 +570,7 @@ function ShippingEditor({
             </Field>
             <Field><span style={label}>Container type</span>
               <select style={{ ...input, opacity: r.method === "CONTAINER" ? 1 : 0.4 }} disabled={r.method !== "CONTAINER"} value={r.containerType ?? ""} onChange={(e) => set(i, { containerType: (e.target.value || null) as AdminShippingRow["containerType"] })}>
-                <option value="" style={opt}>—</option>
+                <option value="" style={opt}>-</option>
                 <option value="SHARED" style={opt}>SHARED</option>
                 <option value="SOLE" style={opt}>SOLE</option>
               </select>
@@ -620,7 +620,7 @@ function ClearingEditor({
           {current.validUntil ? ` · valid to ${new Date(current.validUntil).toLocaleDateString()}` : ""}
         </p>
       ) : (
-        <p style={{ color: "var(--amber)", marginBottom: 12 }}>No clearing quote yet — required before publishing.</p>
+        <p style={{ color: "var(--amber)", marginBottom: 12 }}>No clearing quote yet - required before publishing.</p>
       )}
       <Row>
         <Field><span style={label}>Clearing cost (NGN)</span><input style={input} inputMode="decimal" value={costNGN} onChange={(e) => setCostNGN(e.target.value)} /></Field>

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 // Self-serve Premium: requests a membership invoice for the signed-in buyer,
 // then sends them to "My activity" to view bank details and pay. No checkout,
-// no self-activation — an admin grants Premium once payment is confirmed.
+// no self-activation - an admin grants Premium once payment is confirmed.
 export function UpgradeButton({ label = "Get Premium" }: { label?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -29,10 +29,10 @@ export function UpgradeButton({ label = "Get Premium" }: { label?: string }) {
         router.refresh();
         return;
       }
-      // Invoice issued (or an open one reused) — go pay it in My activity.
+      // Invoice issued (or an open one reused) - go pay it in My activity.
       router.push("/account");
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
     } finally {
       setBusy(false);
     }

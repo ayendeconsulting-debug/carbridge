@@ -217,6 +217,20 @@ export interface CheckoutResult {
 
 /* ---- Buyer "My activity" shapes ---- */
 
+export interface WatchingItemView {
+  vehicleId: string;
+  name: string;
+  coverPhotoUrl: string | null;
+  savedAt: string;
+  available: boolean;
+  statusNote: string | null;
+  current: { ngn: string; cad: string } | null;
+  savedTotal: { ngn: string; cad: string } | null;
+  priceDropCAD: string | null;
+  priceUpCAD: string | null;
+  fxMoved: boolean;
+}
+
 export interface MyOfferView {
   id: string;
   status: string;

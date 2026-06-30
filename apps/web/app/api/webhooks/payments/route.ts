@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
   const userId = event.metadata?.userId;
   if (typeof userId !== "string" || !userId) {
-    // Nothing we can attribute this to — ack so it isn't retried forever.
+    // Nothing we can attribute this to - ack so it isn't retried forever.
     return Response.json({ received: true, fulfilled: false });
   }
 

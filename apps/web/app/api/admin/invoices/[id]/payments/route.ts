@@ -3,7 +3,7 @@ import { recordPayment } from "@/lib/invoicing";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/admin/invoices/[id]/payments — record a manual bank payment.
+// POST /api/admin/invoices/[id]/payments - record a manual bank payment.
 // Body: { amount: string (NGN), reference: string, paidAt?: ISO, note?: string }
 // Dedup is by reference; full payment auto-confirms the reservation + SOLD.
 export async function POST(

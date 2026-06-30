@@ -41,7 +41,7 @@ export async function POST(req: Request) {
   }
   const currency = body.currency === "CAD" ? "CAD" : "NGN";
 
-  // Authoritative recompute (FR-CST-05) — also confirms the vehicle exists and
+  // Authoritative recompute (FR-CST-05) - also confirms the vehicle exists and
   // the method is actually offered for it.
   const landed = await computeAuthoritativeLanded(vehicleId, method);
   if (!landed) {

@@ -16,7 +16,7 @@ export function AdminGate() {
       </div>
       <h1 className="exp" style={{ fontSize: 24, fontWeight: 800, margin: "10px 0 8px" }}>Admin console</h1>
       <p style={{ color: "var(--steel)", marginBottom: 22, lineHeight: 1.6 }}>
-        This is a gated operations area for responding to offers and reservations. Demo access uses a local stub — replace with Clerk roles for production.
+        This is a gated operations area for responding to offers and reservations. Demo access uses a local stub - replace with Clerk roles for production.
       </p>
       <button className="btn btn-buy" style={{ width: "100%" }} onClick={enter}>
         Enter admin mode (demo)

@@ -5,9 +5,9 @@ import { CLERK_ENABLED } from "@/lib/clerk-flag";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ayende Autos — Canadian cars, landed in Lagos",
+  title: "Ayende Autos - Canadian cars, landed in Lagos",
   description:
-    "Browse used vehicles sourced and inspected in Canada, each with the full landed cost — purchase, shipping, Lagos clearing and 12% handling — in CAD and NGN, repriced live as the rate moves.",
+    "Browse used vehicles sourced and inspected in Canada, each with the full landed cost - purchase, shipping, Lagos clearing and 12% handling - in CAD and NGN, repriced live as the rate moves.",
 };
 
 export const viewport: Viewport = {

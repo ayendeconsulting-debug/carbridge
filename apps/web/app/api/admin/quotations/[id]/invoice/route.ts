@@ -3,7 +3,7 @@ import { issueInvoiceForQuotation } from "@/lib/invoicing";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/admin/quotations/[id]/invoice — convert an issued quotation into a
+// POST /api/admin/quotations/[id]/invoice - convert an issued quotation into a
 // CB-INV invoice (NGN, bank instructions attached).
 export async function POST(
   _req: Request,

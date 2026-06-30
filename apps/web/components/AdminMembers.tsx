@@ -107,7 +107,7 @@ export function AdminMembers({
 
   function grant() {
     if (!userId) { setError("Select a buyer first."); return; }
-    post("/api/admin/memberships/grant", { userId }, (j) => `Premium granted — active until ${shortDate(String(j.expiresAt))}.`);
+    post("/api/admin/memberships/grant", { userId }, (j) => `Premium granted - active until ${shortDate(String(j.expiresAt))}.`);
   }
 
   function issue() {
@@ -130,7 +130,7 @@ export function AdminMembers({
       });
       const j = (await res.json().catch(() => ({}))) as Record<string, unknown>;
       if (!res.ok) { setError((j.error as string) ?? "Could not record payment"); return; }
-      setNotice(j.premiumGranted ? "Payment recorded — Premium granted." : "Payment recorded.");
+      setNotice(j.premiumGranted ? "Payment recorded - Premium granted." : "Payment recorded.");
       router.refresh();
     } catch {
       setError("Network error");
@@ -168,8 +168,8 @@ export function AdminMembers({
         {selected && (
           <div className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 10 }}>
             {selected.tier === "PREMIUM" && selected.premiumExpiresAt
-              ? `Currently Premium · expires ${shortDate(selected.premiumExpiresAt)} — a grant extends from there.`
-              : "Currently not Premium — a grant runs one year from today."}
+              ? `Currently Premium · expires ${shortDate(selected.premiumExpiresAt)} - a grant extends from there.`
+              : "Currently not Premium - a grant runs one year from today."}
           </div>
         )}
 

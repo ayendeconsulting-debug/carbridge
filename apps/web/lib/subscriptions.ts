@@ -84,7 +84,7 @@ export async function grantPremium(
 
 export interface FulfillInput {
   userId: string;
-  /** Provider reference (Paystack transaction reference) — the idempotency key. */
+  /** Provider reference (Paystack transaction reference) - the idempotency key. */
   providerRef: string;
   plan: string;
 }

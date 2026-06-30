@@ -22,9 +22,9 @@ function parseBank(raw: unknown): MyBankInstructions | null {
   const accountNumber = str(o.accountNumber);
   if (!bankName && !accountName && !accountNumber) return null;
   return {
-    bankName: bankName ?? "—",
-    accountName: accountName ?? "—",
-    accountNumber: accountNumber ?? "—",
+    bankName: bankName ?? "-",
+    accountName: accountName ?? "-",
+    accountNumber: accountNumber ?? "-",
     referenceHint: str(o.referenceHint),
     note: str(o.note),
   };

@@ -18,7 +18,7 @@ export async function POST(
 
   const user = await getCurrentUser();
   if (!user) {
-    return Response.json({ error: "No demo user — run the seed" }, { status: 500 });
+    return Response.json({ error: "No demo user - run the seed" }, { status: 500 });
   }
 
   let body: Record<string, unknown>;

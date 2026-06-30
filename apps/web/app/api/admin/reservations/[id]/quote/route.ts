@@ -3,7 +3,7 @@ import { issueQuotationForReservation } from "@/lib/invoicing";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/admin/reservations/[id]/quote — issue a CB-Q quotation from a
+// POST /api/admin/reservations/[id]/quote - issue a CB-Q quotation from a
 // reservation, snapshotting its locked landed total.
 export async function POST(
   _req: Request,

@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-// Expiry sweep — the mechanism behind the "wire the cron later" decision.
+// Expiry sweep - the mechanism behind the "wire the cron later" decision.
 // Ready and manually testable now; not yet scheduled. When you're ready, enable
 // the schedule in .github/workflows/reservation-sweep.yml.
 //

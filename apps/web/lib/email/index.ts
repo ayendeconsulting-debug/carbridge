@@ -39,7 +39,7 @@ function appUrl(): string {
 }
 
 /**
- * The send seam — mirrors the FX / Payments / Auth dev↔real pattern. With no
+ * The send seam - mirrors the FX / Payments / Auth dev↔real pattern. With no
  * RESEND_API_KEY we log and send nothing (local stays zero-config); with a key
  * we deliver via Resend. ALWAYS best-effort: never throws, so a mail failure
  * can never break the invoice/payment flow that triggered it.
@@ -70,7 +70,7 @@ async function buyer(
 }
 
 /* --------------------------- public send API --------------------------- */
-/* Each is fully self-contained in try/catch — nothing ever escapes into the
+/* Each is fully self-contained in try/catch - nothing ever escapes into the
  * caller. Callers may `await` them without risk. */
 
 export async function sendQuoteEmail(args: {

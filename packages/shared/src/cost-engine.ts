@@ -95,7 +95,7 @@ export function toDisplay(b: LandedCostBreakdown): LandedCostDisplay {
   };
 }
 
-/** JSON-safe, rounded to each currency's minor unit — the authoritative stored figures. */
+/** JSON-safe, rounded to each currency's minor unit - the authoritative stored figures. */
 export function serializeLandedCost(b: LandedCostBreakdown): SerializedBreakdown {
   const money = (value: Decimal, currency: Currency): string =>
     roundMoney(value, currency).toFixed(MINOR_UNITS[currency]);

@@ -6,7 +6,7 @@ const CLERK_ENABLED =
 
 // Browsing is public; buying/admin are gated at the action level via
 // getAuthContext(). Webhooks authenticate themselves (svix / HMAC). We don't
-// call auth.protect() globally — clerkMiddleware runs only so auth() context is
+// call auth.protect() globally - clerkMiddleware runs only so auth() context is
 // available to routes and server components downstream.
 const handler = clerkMiddleware(async () => {
   // No-op: gating happens in getAuthContext(), not here.

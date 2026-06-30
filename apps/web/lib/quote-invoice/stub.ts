@@ -58,7 +58,7 @@ export function createStubQuoteInvoiceProvider(): QuoteInvoiceProvider {
       };
     },
 
-    // No signing locally — every delivery is "trusted" in dev.
+    // No signing locally - every delivery is "trusted" in dev.
     verifyWebhook(_rawBody: string, _signature: string | null): boolean {
       return true;
     },

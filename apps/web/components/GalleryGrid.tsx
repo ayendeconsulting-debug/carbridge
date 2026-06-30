@@ -7,7 +7,8 @@ import type { FxView, VehicleCardView } from "@/lib/types";
 
 type Sort = "newest" | "priceUp" | "priceDown" | "mileage";
 
-export function GalleryGrid({ cards, fx }: { cards: VehicleCardView[]; fx: FxView }) {
+export function GalleryGrid({ cards, fx, favoritedIds = [] }: { cards: VehicleCardView[]; fx: FxView; favoritedIds?: string[] }) {
+  const favSet = useMemo(() => new Set(favoritedIds), [favoritedIds]);
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<Sort>("newest");
   const [trans, setTrans] = useState<string>("ALL");
@@ -117,7 +118,7 @@ export function GalleryGrid({ cards, fx }: { cards: VehicleCardView[]; fx: FxVie
       ) : (
         <div className="grid">
           {shown.map((c) => (
-            <VehicleCard key={c.id} v={c} fx={fx} />
+            <VehicleCard key={c.id} v={c} fx={fx} favorited={favSet.has(c.id)} />
           ))}
         </div>
       )}

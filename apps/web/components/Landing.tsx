@@ -37,11 +37,11 @@ const FEATURED: Feat[] = [
 
 const FAQS: [string, string][] = [
   ["How is the landed cost worked out?", "It's the purchase price plus ocean shipping, plus the Lagos clearing quote, plus our 12% handling fee. Every line is shown in dollars and naira, and the total updates live as the exchange rate moves."],
-  ["RoRo or container — what's the difference?", "RoRo (roll-on/roll-off) is usually cheaper and a little faster for a single car. A container can be shared with other vehicles or booked solely, and offers more protection. You can toggle between them on each listing and watch the total recompute."],
-  ["How does clearing in Lagos work?", "Clearing is a manually entered figure on each vehicle, taken from an accredited Lagos agent's written quotation — a real number for that specific car, not an automated estimate or an age-based rule."],
+  ["RoRo or container - what's the difference?", "RoRo (roll-on/roll-off) is usually cheaper and a little faster for a single car. A container can be shared with other vehicles or booked solely, and offers more protection. You can toggle between them on each listing and watch the total recompute."],
+  ["How does clearing in Lagos work?", "Clearing is a manually entered figure on each vehicle, taken from an accredited Lagos agent's written quotation - a real number for that specific car, not an automated estimate or an age-based rule."],
   ["Do I need to subscribe to buy?", "Browsing is open to everyone. Buy Now and Make an Offer require a Premium membership, which also locks your quoted rate for 72 hours."],
   ["What happens when the exchange rate moves?", "Listed prices reprice in real time. When you're Premium and request a quote, make an offer, or reserve, the rate freezes for 72 hours so it can't move against you mid-deal."],
-  ["How do I pay for the car?", "You reserve the vehicle in-app at the locked total. Our team then finalises payment with you through secure transfer — initially off-platform, with escrow planned — never to a personal account."],
+  ["How do I pay for the car?", "You reserve the vehicle in-app at the locked total. Our team then finalises payment with you through secure transfer - initially off-platform, with escrow planned - never to a personal account."],
 ];
 
 /* ------------------------------------------------------------------ */
@@ -298,7 +298,7 @@ export function Landing() {
           <div className="hero-l">
             <div className="eyebrow">Every cost · shown · before you commit</div>
             <h1>Canadian cars,<br /><em>landed in Lagos.</em></h1>
-            <p className="lede">Browse used vehicles sourced and inspected in Canada, each with the full landed cost — purchase, shipping, Lagos clearing and our 12% handling — itemised in dollars and naira, and repriced live as the rate moves. No surprises at the port.</p>
+            <p className="lede">Browse used vehicles sourced and inspected in Canada, each with the full landed cost - purchase, shipping, Lagos clearing and our 12% handling - itemised in dollars and naira, and repriced live as the rate moves. No surprises at the port.</p>
             <div className="hero-cta">
               <Link className="btn-xl amber" href="/gallery"><Arrow />Get started</Link>
               <Link className="btn-xl line" href="/gallery">Browse vehicles</Link>
@@ -353,13 +353,13 @@ export function Landing() {
               <div className="num">01 · SOURCE</div>
               <div className="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4-4" /></svg></div>
               <h3>We source in Canada</h3>
-              <p>We find and inspect used vehicles across Canada — graded for condition, VIN-verified, with accident history checked before they're listed.</p>
+              <p>We find and inspect used vehicles across Canada - graded for condition, VIN-verified, with accident history checked before they're listed.</p>
             </div>
             <div className="step">
               <div className="num">02 · PRICE</div>
               <div className="icn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg></div>
               <h3>You see the full cost</h3>
-              <p>Every listing itemises the landed total — purchase, shipping, Lagos clearing and 12% handling — in dollars and naira, repriced live as the rate moves.</p>
+              <p>Every listing itemises the landed total - purchase, shipping, Lagos clearing and 12% handling - in dollars and naira, repriced live as the rate moves.</p>
             </div>
             <div className="step">
               <div className="num">03 · LAND</div>
@@ -373,12 +373,12 @@ export function Landing() {
         <section className="section">
           <div className="sec-eyebrow">Why trust us</div>
           <div className="sec-title">The whole price, on the table.</div>
-          <p className="sec-sub">Buying a car across an ocean means trusting a number. So we show you every figure that makes it up — nothing rounded away, nothing waiting for you at the dock.</p>
+          <p className="sec-sub">Buying a car across an ocean means trusting a number. So we show you every figure that makes it up - nothing rounded away, nothing waiting for you at the dock.</p>
           <div className="trust">
             <div className="tcard">
               <div className="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>Nothing hidden</div>
               <h4>Every line itemised</h4>
-              <p>Purchase, shipping, clearing and the 12% handling fee are shown as separate lines — the markup is on the table, not buried in the price.</p>
+              <p>Purchase, shipping, clearing and the 12% handling fee are shown as separate lines - the markup is on the table, not buried in the price.</p>
             </div>
             <div className="tcard">
               <div className="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6" /></svg>Two currencies</div>
@@ -393,7 +393,7 @@ export function Landing() {
             <div className="tcard">
               <div className="k"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 20h20M5 20V9l7-4 7 4v11" /></svg>Real quotes</div>
               <h4>Clearing from accredited agents</h4>
-              <p>The Lagos clearing figure on each car comes from an accredited agent's written quotation — a real number, not an estimate.</p>
+              <p>The Lagos clearing figure on each car comes from an accredited agent's written quotation - a real number, not an estimate.</p>
             </div>
           </div>
         </section>

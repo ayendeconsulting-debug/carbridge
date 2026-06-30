@@ -14,7 +14,7 @@ const ALLOWED = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 // Upload: the browser posts a (downscaled) image as multipart/form-data; the
 // server streams it to Blob with put(). On Vercel this authenticates via OIDC
-// (BLOB_STORE_ID + VERCEL_OIDC_TOKEN) — no read-write token required.
+// (BLOB_STORE_ID + VERCEL_OIDC_TOKEN) - no read-write token required.
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -50,7 +50,7 @@ export async function POST(
   }
   if (file.size > MAX_BYTES) {
     return Response.json(
-      { error: "Image is too large even after processing — try a smaller photo" },
+      { error: "Image is too large even after processing - try a smaller photo" },
       { status: 413 },
     );
   }
@@ -135,14 +135,14 @@ export async function PATCH(
 
   try {
     await prisma.$transaction(async (tx) => {
-      // pass 1 — move all to unique negative temporaries
+      // pass 1 - move all to unique negative temporaries
       for (let i = 0; i < order.length; i++) {
         await tx.vehiclePhoto.update({
           where: { id: order[i]! },
           data: { position: -(i + 1) },
         });
       }
-      // pass 2 — assign final 0..n-1
+      // pass 2 - assign final 0..n-1
       for (let i = 0; i < order.length; i++) {
         await tx.vehiclePhoto.update({
           where: { id: order[i]! },

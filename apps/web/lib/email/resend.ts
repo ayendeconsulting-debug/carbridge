@@ -4,7 +4,7 @@ import type { EmailMessage } from "./index";
 const ENDPOINT = "https://api.resend.com/emails";
 
 /**
- * Deliver one message via the Resend HTTP API (no SDK dependency — keeps the
+ * Deliver one message via the Resend HTTP API (no SDK dependency - keeps the
  * package.json untouched). Throws on non-2xx; the caller (sendEmail) catches.
  */
 export async function resendSend(from: string, msg: EmailMessage): Promise<void> {

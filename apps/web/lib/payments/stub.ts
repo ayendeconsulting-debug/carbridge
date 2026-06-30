@@ -9,7 +9,7 @@ import type {
 /**
  * DEV-ONLY provider. No network, no keys. initCheckout points the buyer at a
  * local /api/subscriptions/dev-complete route that fulfils the subscription and
- * redirects to the callback — simulating a successful hosted checkout so the
+ * redirects to the callback - simulating a successful hosted checkout so the
  * whole upgrade flow is demoable on localhost. The sibling of createFixedProvider
  * in the FX module. NEVER selected when a real PAYSTACK_SECRET_KEY is set unless
  * PAYMENTS_DEV_STUB=1 is forced.
@@ -30,7 +30,7 @@ export function createStubProvider(): PaymentProvider {
     },
 
     async verifyTransaction(reference: string): Promise<VerifyResult> {
-      // The stub always reports success — fulfilment already happened in
+      // The stub always reports success - fulfilment already happened in
       // dev-complete before the redirect.
       return { status: "success", reference };
     },

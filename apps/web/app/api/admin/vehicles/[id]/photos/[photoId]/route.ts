@@ -19,7 +19,7 @@ export async function DELETE(
     return Response.json({ error: "Photo not found" }, { status: 404 });
   }
 
-  // Best-effort blob delete — never fail the DB delete if the object is already gone.
+  // Best-effort blob delete - never fail the DB delete if the object is already gone.
   try {
     await del(photo.url);
   } catch {

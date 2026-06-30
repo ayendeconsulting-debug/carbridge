@@ -31,9 +31,9 @@ const MONO = "'Spline Sans Mono', ui-monospace, 'SF Mono', Menlo, Consolas, mono
 const SERIF = "Merriweather, Georgia, 'Times New Roman', serif";
 
 function fmtDate(d: Date | string | null): string {
-  if (!d) return "—";
+  if (!d) return "-";
   const dt = typeof d === "string" ? new Date(d) : d;
-  if (isNaN(dt.getTime())) return "—";
+  if (isNaN(dt.getTime())) return "-";
   return dt.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" });
 }
 
@@ -128,12 +128,12 @@ export function quoteEmail(a: {
       "Review your quote above.",
       "<b>Accept it</b> in your activity to confirm you want to proceed.",
       "We issue your invoice with bank-transfer details.",
-      "Pay by transfer — we confirm and secure your vehicle.",
+      "Pay by transfer - we confirm and secure your vehicle.",
     ]) +
     button(a.accountUrl, "Accept & view in my activity") +
     p(`Your landed total is held at the locked rate until ${a.validUntil ? fmtDate(a.validUntil) : "the rate-lock expires"}. We can only invoice once you've accepted.`);
   return {
-    subject: `Your quote ${a.number} — ${BRAND.name}`,
+    subject: `Your quote ${a.number} - ${BRAND.name}`,
     html: shell({ preheader: `Quote ${a.number} for the ${a.vehicleName}`, heading: "Your quote is ready", body }),
     text: `Hi ${a.name ?? "there"},
 
@@ -166,7 +166,7 @@ export function invoiceEmail(a: {
       : `your <b>Premium membership</b>`;
   const bankBlock = `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f6f4ee;border:1px solid ${C.rule};border-radius:6px;margin:6px 0 16px;">
        <tr><td style="padding:14px 16px;">
-         <div style="font-family:${MONO};font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:${C.soft};margin-bottom:6px;">Bank transfer — official business account</div>
+         <div style="font-family:${MONO};font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:${C.soft};margin-bottom:6px;">Bank transfer - official business account</div>
          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
            ${row("Bank", a.bank.bankName)}
            ${row("Account name", a.bank.accountName)}
@@ -196,8 +196,8 @@ export function invoiceEmail(a: {
   return {
     subject:
       a.kind === "CAR"
-        ? `Invoice ${a.number} — ${BRAND.name}`
-        : `Premium invoice ${a.number} — ${BRAND.name}`,
+        ? `Invoice ${a.number} - ${BRAND.name}`
+        : `Premium invoice ${a.number} - ${BRAND.name}`,
     html: shell({ preheader: `Invoice ${a.number} · ${fmtNGN(a.amountNGN)} due`, heading: "Your invoice", body }),
     text: `Hi ${a.name ?? "there"},
 
@@ -228,7 +228,7 @@ export function receiptEmail(a: {
 }): EmailContent {
   const body =
     greeting(a.name) +
-    p(`We've received your payment — thank you. Your purchase of the <b>${esc(a.vehicleName)}</b> is now confirmed.`) +
+    p(`We've received your payment - thank you. Your purchase of the <b>${esc(a.vehicleName)}</b> is now confirmed.`) +
     `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-top:1px solid ${C.rule};border-bottom:1px solid ${C.rule};margin:4px 0 16px;">
        ${row("Invoice", a.invoiceNumber)}
        ${row("Amount received", fmtNGN(a.amountPaidNGN))}
@@ -236,11 +236,11 @@ export function receiptEmail(a: {
     button(a.accountUrl, "View my activity") +
     p(`Our team will be in touch with shipping and clearing updates as your vehicle moves.`);
   return {
-    subject: `Payment received — ${BRAND.name}`,
+    subject: `Payment received - ${BRAND.name}`,
     html: shell({ preheader: `Payment received for the ${a.vehicleName}`, heading: "Payment received", body }),
     text: `Hi ${a.name ?? "there"},
 
-We've received your payment — thank you. Your purchase of the ${a.vehicleName} is confirmed.
+We've received your payment - thank you. Your purchase of the ${a.vehicleName} is confirmed.
 
 Invoice: ${a.invoiceNumber}
 Amount received: ${fmtNGN(a.amountPaidNGN)}
@@ -266,7 +266,7 @@ export function premiumGrantedEmail(a: {
     p(`Premium unlocks Reserve, Make an Offer, and Source-a-Car across the marketplace.`) +
     button(a.accountUrl, "Start browsing");
   return {
-    subject: `Premium is active — ${BRAND.name}`,
+    subject: `Premium is active - ${BRAND.name}`,
     html: shell({ preheader: `Your Premium membership is active`, heading: "Premium activated", body }),
     text: `Hi ${a.name ?? "there"},
 
@@ -292,17 +292,17 @@ export function offerAcceptedEmail(a: {
   const agreed = a.agreedCurrency === "NGN" ? fmtNGN(a.agreedAmount) : fmtCAD(a.agreedAmount);
   const body =
     greeting(a.name) +
-    p(`Good news — your offer of <b>${esc(agreed)}</b> on the <b>${esc(a.vehicleName)}</b> was accepted.`) +
+    p(`Good news - your offer of <b>${esc(agreed)}</b> on the <b>${esc(a.vehicleName)}</b> was accepted.`) +
     stepsBlock("To complete your purchase", [
       "<b>Reserve</b> the vehicle at the agreed price from your activity.",
-      "We issue your quote at that price — you accept it.",
+      "We issue your quote at that price - you accept it.",
       "We invoice you with bank-transfer details; you pay by transfer.",
       "We confirm the payment and your vehicle is secured.",
     ]) +
     button(a.accountUrl, "Reserve at the agreed price") +
     p(`Reserving holds the car for you. Until you reserve, it stays available to other buyers, so it's worth doing soon.`);
   return {
-    subject: `Your offer was accepted — ${BRAND.name}`,
+    subject: `Your offer was accepted - ${BRAND.name}`,
     html: shell({
       preheader: `Reserve the ${a.vehicleName} at your agreed price of ${agreed}`,
       heading: "Your offer was accepted",
@@ -310,7 +310,7 @@ export function offerAcceptedEmail(a: {
     }),
     text: `Hi ${a.name ?? "there"},
 
-Good news — your offer of ${agreed} on the ${a.vehicleName} was accepted.
+Good news - your offer of ${agreed} on the ${a.vehicleName} was accepted.
 
 To complete your purchase, reserve the vehicle at the agreed price:
 ${a.accountUrl}

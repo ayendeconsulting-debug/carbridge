@@ -25,7 +25,7 @@ export interface RateLockRecord {
 }
 
 /**
- * Build a rate-lock record. This is pure — persist the result as a RateLock row
+ * Build a rate-lock record. This is pure - persist the result as a RateLock row
  * (the Prisma model already exists) and reference it from the Offer/Reservation.
  */
 export function createRateLock({

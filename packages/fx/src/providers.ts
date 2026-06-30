@@ -24,7 +24,7 @@ export interface OpenErApiOptions {
  * NOTE (OQ-2): this is an *official-market* style reference rate. CarBridge may
  * want to show the parallel/market rate instead, or blend. Because everything
  * goes through the FxProvider interface, swapping the source is a one-file change
- * — no callers need to know.
+ * - no callers need to know.
  */
 export function createOpenErApiProvider(
   opts: OpenErApiOptions = {},
@@ -66,7 +66,7 @@ export interface FixedProviderOptions {
 }
 
 /**
- * Fixed provider — returns a constant rate. Useful for local dev (no network),
+ * Fixed provider - returns a constant rate. Useful for local dev (no network),
  * tests, and as a deterministic fallback. Pair the manual override here with an
  * admin-set rate when a live feed is unavailable.
  */
@@ -111,7 +111,7 @@ export interface JitterProviderOptions {
  *
  * Stateful by design: the walk remembers its last value (closure) and drifts
  * from it, then clamps to ±`bandPct` of `center` so it can't run away. All
- * arithmetic goes through `D` (decimal.js) — no floats — and the result is a
+ * arithmetic goes through `D` (decimal.js) - no floats - and the result is a
  * decimal string, identical in shape to every other provider.
  *
  * NEVER select this in production: gate it behind an explicit env flag

@@ -1,5 +1,5 @@
 // The seed has no photos, so cards/detail render the Manifest line-art over a
-// gradient — colours derived deterministically from the vehicle id so each car
+// gradient - colours derived deterministically from the vehicle id so each car
 // looks stable across renders.
 
 const PALETTES: { g1: string; g2: string; art: string }[] = [

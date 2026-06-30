@@ -104,7 +104,7 @@ export function AdminConsole({
       setMatchFor(null);
       router.refresh();
     } catch {
-      setMsg({ id, text: "Network error — try again" });
+      setMsg({ id, text: "Network error - try again" });
     } finally {
       setBusy(null);
     }
@@ -158,7 +158,7 @@ export function AdminConsole({
               {o.listedTotal && <Field k="Listed">{fmtNGN(o.listedTotal.ngn)}</Field>}
               {o.counter && <Field k="Countered">{fmt(o.counter.amount, o.counter.currency)}</Field>}
               <Field k="Rate lock" tone={o.rateExpired ? "dim" : undefined}>
-                {o.rateExpiresAt ? (o.rateExpired ? "expired" : `holds ${shortDate(o.rateExpiresAt)}`) : "—"}
+                {o.rateExpiresAt ? (o.rateExpired ? "expired" : `holds ${shortDate(o.rateExpiresAt)}`) : "-"}
               </Field>
             </div>
 
@@ -216,7 +216,7 @@ export function AdminConsole({
               <Field k="Locked total">{fmtNGN(r.lockedTotalNGN)}</Field>
               <Field k="≈ CAD">{fmtCAD(r.lockedTotalCAD)}</Field>
               <Field k="Holds" tone={r.expired ? "dim" : undefined}>
-                {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "—"}
+                {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "-"}
               </Field>
             </div>
 

@@ -75,7 +75,7 @@ export async function getCurrentSnapshot(): Promise<FxView> {
 /**
  * Pick the FX source. Production uses the real keyless provider. When
  * FX_DEV_JITTER === "1" (LOCAL DEV ONLY) we use a bounded random walk so the
- * live naira total visibly reprices on every refresh — the open.er-api rate is
+ * live naira total visibly reprices on every refresh - the open.er-api rate is
  * near-static intraday and won't demonstrate the feature otherwise. Never set
  * FX_DEV_JITTER in a deployed environment.
  */

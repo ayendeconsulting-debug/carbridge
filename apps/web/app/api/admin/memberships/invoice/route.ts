@@ -3,7 +3,7 @@ import { issueMembershipInvoice } from "@/lib/invoicing";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/admin/memberships/invoice — issue a MEMBERSHIP invoice for a buyer.
+// POST /api/admin/memberships/invoice - issue a MEMBERSHIP invoice for a buyer.
 // Body: { userId: string, amount: string (NGN) }. Full payment (recorded via the
 // normal payments route) grants Premium automatically.
 export async function POST(req: Request) {

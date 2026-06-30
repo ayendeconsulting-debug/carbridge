@@ -7,7 +7,7 @@
 // method throws a clear, actionable error rather than guessing endpoints.
 //
 // Selected by ./index.ts only when QUOTE_INVOICE_DEV_STUB is unset AND both
-// QUOTE_INVOICE_API_URL and QUOTE_INVOICE_API_KEY are present — so local dev
+// QUOTE_INVOICE_API_URL and QUOTE_INVOICE_API_KEY are present - so local dev
 // always uses the stub and never reaches this file.
 
 import type {

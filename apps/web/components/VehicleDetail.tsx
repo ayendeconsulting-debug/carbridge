@@ -2,6 +2,7 @@ import Link from "next/link";
 import { CarArt } from "./CarArt";
 import { DetailClient } from "./DetailClient";
 import { PhotoGallery } from "./PhotoGallery";
+import { FavoriteHeart } from "./FavoriteHeart";
 import { paletteFor, gradeColor } from "@/lib/art";
 import { transmissionLabel, fuelLabel, colourSwatch } from "@/lib/vehicle-spec";
 import type { FxView, Tier, VehicleDetailView } from "@/lib/types";
@@ -10,11 +11,13 @@ export function VehicleDetail({
   v,
   fx,
   tier,
+  favorited,
   inModal = false,
 }: {
   v: VehicleDetailView;
   fx: FxView;
   tier: Tier;
+  favorited?: boolean;
   inModal?: boolean;
 }) {
   const pal = paletteFor(v.id);
@@ -33,6 +36,9 @@ export function VehicleDetail({
         {!inModal && (
           <Link href="/gallery" className="mono" style={{ position: "absolute", left: 14, top: 14, zIndex: 2, background: "rgba(11,20,19,.7)", border: "1px solid var(--rule)", borderRadius: 8, padding: "7px 11px", fontSize: 11, color: "var(--frost)", textDecoration: "none" }}>← Inventory</Link>
         )}
+        <span style={{ position: "absolute", right: 14, top: 14, zIndex: 2 }}>
+          <FavoriteHeart vehicleId={v.id} initial={favorited} size={20} />
+        </span>
       </div>
 
       <div style={{ padding: "18px 16px 0" }}>
@@ -57,7 +63,7 @@ export function VehicleDetail({
           <Stat k="Odometer" val={`${v.mileageKm.toLocaleString()} km`} />
           <Stat k="Transmission" val={transmissionLabel(v.transmission)} />
           <Stat k="Fuel" val={fuelLabel(v.fuelType)} />
-          <Stat k="Colour" val={v.colour ?? "—"} swatch={v.colour ? colourSwatch(v.colour) : undefined} />
+          <Stat k="Colour" val={v.colour ?? "-"} swatch={v.colour ? colourSwatch(v.colour) : undefined} />
           <Stat k="History" val={v.hasClaims ? "1 minor claim" : "Clean · no claims"} tone={v.hasClaims ? "warn" : "ok"} />
           <Stat k="Transit to Lagos" val={v.etaLabel} />
           <Stat k="Clearing" val={v.clearing ? "Quoted ✓" : "Pending"} tone={v.clearing ? "ok" : "warn"} />

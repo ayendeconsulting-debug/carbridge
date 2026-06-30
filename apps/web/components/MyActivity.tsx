@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { fmtNGN, fmtCAD } from "@/lib/format";
+import { WatchingSection } from "./WatchingSection";
 import type {
   MyOfferView,
   MyReservationView,
@@ -86,7 +87,7 @@ export function MyActivity({
       }
       router.refresh();
     } catch {
-      setMsg({ id, text: "Network error — try again" });
+      setMsg({ id, text: "Network error - try again" });
     } finally {
       setBusy(null);
     }
@@ -108,7 +109,7 @@ export function MyActivity({
       }
       router.refresh();
     } catch {
-      setMsg({ id: offerId, text: "Network error — try again" });
+      setMsg({ id: offerId, text: "Network error - try again" });
     } finally {
       setBusy(null);
     }
@@ -130,7 +131,7 @@ export function MyActivity({
       }
       router.refresh();
     } catch {
-      setMsg({ id: quoteId, text: "Network error — try again" });
+      setMsg({ id: quoteId, text: "Network error - try again" });
     } finally {
       setBusy(null);
     }
@@ -175,6 +176,9 @@ export function MyActivity({
         <MembershipInvoiceBlock inv={membershipInvoice} />
       )}
 
+      {/* Watching */}
+      <WatchingSection />
+
       {/* Reservations */}
       <SectionLabel>Reservations · {reservations.length}</SectionLabel>
       {reservations.length === 0 && <Empty>You haven&rsquo;t reserved a vehicle yet.</Empty>}
@@ -191,7 +195,7 @@ export function MyActivity({
             <Field k="Locked total">{fmtNGN(r.lockedTotalNGN)}</Field>
             <Field k="≈ CAD">{fmtCAD(r.lockedTotalCAD)}</Field>
             <Field k="Holds" tone={r.expired ? "dim" : undefined}>
-              {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "—"}
+              {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "-"}
             </Field>
           </div>
           <JourneyTracker fromOffer={r.fromOffer} b={r.billing} paid={r.billing?.invoice?.status === "PAID"} />
@@ -219,7 +223,7 @@ export function MyActivity({
               {o.listedTotal && <Field k="Listed">{fmtNGN(o.listedTotal.ngn)}</Field>}
               {o.counter && <Field k="Counter">{fmt(o.counter.amount, o.counter.currency)}</Field>}
               <Field k="Rate lock" tone={o.rateExpired ? "dim" : undefined}>
-                {o.rateExpiresAt ? (o.rateExpired ? "expired" : `holds ${shortDate(o.rateExpiresAt)}`) : "—"}
+                {o.rateExpiresAt ? (o.rateExpired ? "expired" : `holds ${shortDate(o.rateExpiresAt)}`) : "-"}
               </Field>
             </div>
 
@@ -228,7 +232,7 @@ export function MyActivity({
             {o.canRespond && (
               <div style={{ marginTop: 12 }}>
                 <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginBottom: 8 }}>
-                  Countered at {o.counter ? fmt(o.counter.amount, o.counter.currency) : "—"} — your move:
+                  Countered at {o.counter ? fmt(o.counter.amount, o.counter.currency) : "-"} - your move:
                 </p>
                 <div style={{ display: "flex", gap: 8 }}>
                   <button className="btn btn-buy" disabled={isBusy} onClick={() => respond(o.id, "accept")}>{isBusy ? "…" : "Accept counter"}</button>
@@ -240,7 +244,7 @@ export function MyActivity({
             {o.canReserve && (
               <div style={{ marginTop: 12 }}>
                 <p className="mono" style={{ fontSize: 11, color: "var(--stamp)", marginBottom: 8 }}>
-                  ✓ Accepted at {fmt(o.agreed.amount, o.agreed.currency)} — reserve it to start your purchase:
+                  ✓ Accepted at {fmt(o.agreed.amount, o.agreed.currency)} - reserve it to start your purchase:
                 </p>
                 <button className="btn btn-buy" disabled={isBusy} onClick={() => reserveFromOffer(o.id)}>
                   {isBusy ? "…" : `Reserve at ${fmt(o.agreed.amount, o.agreed.currency)}`}
@@ -250,7 +254,7 @@ export function MyActivity({
 
             {o.hasReservation && o.status === "ACCEPTED" && (
               <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 10 }}>
-                Reserved — see Reservations above for your quote &amp; payment.
+                Reserved - see Reservations above for your quote &amp; payment.
               </p>
             )}
           </div>
@@ -380,7 +384,7 @@ function BillingBlock({
         (b.canAccept && b.quoteId ? (
           <div style={{ marginTop: 10 }}>
             <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginBottom: 8 }}>
-              Review your quote and accept to proceed — we issue your invoice once you accept.
+              Review your quote and accept to proceed - we issue your invoice once you accept.
             </p>
             <button className="btn btn-buy" disabled={busyId === b.quoteId} onClick={() => onAcceptQuote(b.quoteId!)}>
               {busyId === b.quoteId ? "…" : "Accept quote"}
@@ -388,7 +392,7 @@ function BillingBlock({
           </div>
         ) : (
           <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>
-            Quote accepted — your invoice with payment details will appear here shortly.
+            Quote accepted - your invoice with payment details will appear here shortly.
           </p>
         ))}
 
@@ -407,7 +411,7 @@ function BillingBlock({
           </div>
 
           {inv.status === "PAID" ? (
-            <p className="mono" style={{ fontSize: 12, color: "var(--stamp)", marginTop: 8 }}>✓ Payment received in full — your vehicle is confirmed.</p>
+            <p className="mono" style={{ fontSize: 12, color: "var(--stamp)", marginTop: 8 }}>✓ Payment received in full - your vehicle is confirmed.</p>
           ) : inv.bank ? (
             <div style={{ border: "1px solid var(--rule)", borderRadius: 10, padding: 12, marginTop: 10, background: "rgba(255,255,255,.015)" }}>
               <div className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)", marginBottom: 8 }}>Pay into</div>

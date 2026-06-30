@@ -1,4 +1,4 @@
-// QuoteInvoiceProvider — the seam between CarBridge and the external
+// QuoteInvoiceProvider - the seam between CarBridge and the external
 // quote/invoice platform (the system of record for documents + money).
 //
 // Same dev/real split as FX, Payments and Auth: a dev stub runs locally with
@@ -83,7 +83,7 @@ export interface InvoiceResult {
 
 export interface RecordPaymentInput {
   externalInvoiceId: string;
-  /** Dedup key — the bank-transfer / platform payment reference. */
+  /** Dedup key - the bank-transfer / platform payment reference. */
   reference: string;
   amountNGN: Money;
   paidAt: IsoDate | null;
@@ -119,7 +119,7 @@ export interface WebhookEvent {
 export interface QuoteInvoiceProvider {
   /** Identifies which implementation is live (e.g. "stub", "<platform>"). */
   readonly name: string;
-  /** True for the local stub — lets callers label dev-only documents. */
+  /** True for the local stub - lets callers label dev-only documents. */
   readonly isStub: boolean;
 
   createQuote(input: CreateQuoteInput): Promise<QuoteResult>;

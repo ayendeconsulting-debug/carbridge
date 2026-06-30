@@ -45,7 +45,7 @@ export function PhotoGallery({ photos, alt }: { photos: PhotoView[]; alt: string
         <img
           key={cur.id}
           src={cur.url}
-          alt={`${alt} — photo ${i + 1} of ${n}`}
+          alt={`${alt} - photo ${i + 1} of ${n}`}
           style={{
             display: "block",
             margin: "0 auto",

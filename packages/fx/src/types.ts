@@ -1,4 +1,4 @@
-// @carbridge/fx — core types for the CAD→NGN FX feed.
+// @carbridge/fx - core types for the CAD→NGN FX feed.
 // Rates are carried as decimal STRINGS (never JS floats) so they hand off
 // cleanly to @carbridge/shared's cost engine and to Prisma's Decimal columns.
 
@@ -37,7 +37,7 @@ export interface FxSnapshot {
 export interface FxRefreshConfig {
   /**
    * Margin applied on top of the raw rate, in basis points (1 bp = 0.01%).
-   * 150 => +1.50%. Defaults to 0. This is CarBridge's FX margin/spread —
+   * 150 => +1.50%. Defaults to 0. This is CarBridge's FX margin/spread -
    * configure via FX_SPREAD_BPS. See the OQ-2 note in the README about
    * official vs. market (parallel) rates.
    */

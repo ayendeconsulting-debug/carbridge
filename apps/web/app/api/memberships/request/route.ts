@@ -4,7 +4,7 @@ import { issueOrReuseMembershipInvoice } from "@/lib/invoicing";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/memberships/request — self-serve Premium. Issues (or reuses) a
+// POST /api/memberships/request - self-serve Premium. Issues (or reuses) a
 // membership invoice for the signed-in buyer at the published price. Payment is
 // off-platform (bank transfer); an admin records it, which grants Premium.
 // No payment gateway, no self-activation.
@@ -20,7 +20,7 @@ export async function POST() {
   const price = getMembershipPrice();
   if (!price.configured) {
     return Response.json(
-      { error: "Membership isn't available to purchase right now — please check back soon." },
+      { error: "Membership isn't available to purchase right now - please check back soon." },
       { status: 503 },
     );
   }

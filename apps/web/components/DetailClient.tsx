@@ -121,7 +121,7 @@ export function DetailClient({
       }
       setOfferResult(data as OfferResult);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -144,7 +144,7 @@ export function DetailClient({
       setReserveResult(data as ReservationResult);
       setReserved(true);
     } catch {
-      setError("Network error — please try again.");
+      setError("Network error - please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -224,7 +224,7 @@ export function DetailClient({
           <div className="sheet show" onClick={(e) => e.stopPropagation()}>
             <h3 className="exp" style={{ fontSize: 18, marginBottom: 8 }}>Premium unlocks buying</h3>
             <p style={{ color: "var(--steel)", marginBottom: 18 }}>
-              Buy Now and Make an Offer — with a 72-hour rate lock — are Premium features. Browsing stays free.
+              Buy Now and Make an Offer - with a 72-hour rate lock - are Premium features. Browsing stays free.
             </p>
             <Link href="/upgrade" className="btn btn-buy" style={{ width: "100%", textDecoration: "none", display: "block", textAlign: "center" }} onClick={() => setGate(false)}>
               See Premium plans
@@ -320,13 +320,13 @@ export function DetailClient({
                 </p>
 
                 <div style={{ border: "1px solid var(--rule)", borderRadius: 12, padding: "16px 14px", background: "rgba(255,255,255,.02)", marginBottom: 16 }}>
-                  <div className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)" }}>Total landed — locks for 72h</div>
+                  <div className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: "var(--steel-dim)" }}>Total landed - locks for 72h</div>
                   <div style={{ fontSize: 26, fontWeight: 800, color: "var(--frost)", margin: "6px 0 2px", fontFamily: "var(--mono, monospace)" }}>{fmtNGN(ledger.total.ngn)}</div>
                   <div className="mono" style={{ fontSize: 12, color: "var(--steel)" }}>≈ {fmtCAD(ledger.total.cad)} · {rateLabel(live.effectiveRate)}</div>
                 </div>
 
                 <p style={{ color: "var(--steel)", fontSize: 13, lineHeight: 1.6, marginBottom: 16 }}>
-                  Reserving freezes this total and the FX rate for 72 hours and takes the vehicle off the market. Settlement is finalized off-platform with our team — no payment is taken here.
+                  Reserving freezes this total and the FX rate for 72 hours and takes the vehicle off the market. Settlement is finalized off-platform with our team - no payment is taken here.
                 </p>
 
                 {error && <p style={{ color: "var(--amber)", fontSize: 13, marginBottom: 12 }}>{error}</p>}

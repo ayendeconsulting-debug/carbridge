@@ -414,6 +414,7 @@ model Favorite {
   id        String   @id @default(cuid())
   userId    String
   vehicleId String
+  snapshot  Json? // figures frozen when saved (landed total, fx rate, price, status) - diffed on read for the Watching list
   createdAt DateTime @default(now())
 
   user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)

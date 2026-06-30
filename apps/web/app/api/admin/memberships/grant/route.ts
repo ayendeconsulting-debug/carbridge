@@ -3,7 +3,7 @@ import { grantPremium } from "@/lib/subscriptions";
 
 export const dynamic = "force-dynamic";
 
-// POST /api/admin/memberships/grant — admin grants Premium directly (1 year,
+// POST /api/admin/memberships/grant - admin grants Premium directly (1 year,
 // extends from current expiry if still active). Body: { userId: string }
 export async function POST(req: Request) {
   const actor = await adminActor();

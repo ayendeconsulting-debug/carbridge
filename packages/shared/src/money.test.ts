@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { roundMoney, formatMoney } from './money';
 
-describe('roundMoney — half-up', () => {
+describe('roundMoney - half-up', () => {
   it('rounds CAD to cents', () => {
     expect(roundMoney('2.345', 'CAD').toFixed(2)).toBe('2.35');
     expect(roundMoney('2.344', 'CAD').toFixed(2)).toBe('2.34');

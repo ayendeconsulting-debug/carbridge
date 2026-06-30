@@ -4,7 +4,7 @@ import { getAuthContext } from "./auth";
 export { TIER_COOKIE };
 
 /**
- * Tier for the current caller. Now backed by getAuthContext() — Clerk session →
+ * Tier for the current caller. Now backed by getAuthContext() - Clerk session →
  * DB tier when configured, else the dev-bypass (cb_tier cookie + demo user).
  * Callers (layout, upgrade page) are unchanged.
  */

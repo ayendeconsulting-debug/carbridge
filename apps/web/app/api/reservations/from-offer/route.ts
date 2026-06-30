@@ -7,7 +7,7 @@ import { getCurrentSnapshot } from "@/lib/fx";
 export const dynamic = "force-dynamic";
 
 // Premium-gated. Reserve a vehicle at the buyer's ACCEPTED offer price. The car
-// is held ONLY on this click — a race-safe optimistic AVAILABLE->RESERVED lock,
+// is held ONLY on this click - a race-safe optimistic AVAILABLE->RESERVED lock,
 // so if it sold first we return 409 instead of double-reserving. Links the
 // reservation back to the offer (DB @unique enforces one reservation per offer)
 // and freezes a fresh 72h rate lock at the agreed rate. From here the normal

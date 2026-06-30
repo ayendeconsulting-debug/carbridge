@@ -7,7 +7,7 @@ import Decimal from 'decimal.js';
  *  - cloned, so we never mutate the global Decimal config in a consuming app
  *
  * All pricing math in CarBridge goes through `D`. Floating-point numbers are
- * never used for money — see the README.
+ * never used for money - see the README.
  */
 export const D = Decimal.clone({ precision: 40, rounding: Decimal.ROUND_HALF_UP });
 

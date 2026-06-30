@@ -43,7 +43,7 @@ async function vehicleName(vehicleId: string): Promise<string> {
  * Reconstruct the itemized landed breakdown for a reservation, pinned to its
  * LOCKED rate (so the quote/invoice document is internally consistent with the
  * rate the buyer was quoted). Totals on the documents come from the reservation's
- * authoritative lockedTotalCAD/NGN — this only rebuilds the per-line display.
+ * authoritative lockedTotalCAD/NGN - this only rebuilds the per-line display.
  */
 async function reservationBreakdown(reservation: {
   vehicleId: string;
@@ -163,7 +163,7 @@ export async function issueQuotationForReservation(
 /* ----------------------------- accept quote ----------------------------- */
 
 /**
- * Buyer accepts their issued quotation — the gate the admin needs before
+ * Buyer accepts their issued quotation - the gate the admin needs before
  * invoicing. Owner-checked, idempotent, and refuses an expired quote (a stale
  * rate must be re-issued rather than locked in).
  */
@@ -177,7 +177,7 @@ export async function acceptQuotationByBuyer(
   if (q.status === "ACCEPTED") return { ok: true, status: "ACCEPTED" }; // idempotent
   if (q.status !== "ISSUED") return fail(`Cannot accept a ${q.status} quotation`, 409);
   if (q.validUntil && q.validUntil.getTime() < Date.now()) {
-    return fail("This quote has expired — ask us to re-issue it", 409);
+    return fail("This quote has expired - ask us to re-issue it", 409);
   }
 
   await prisma.$transaction(async (tx) => {

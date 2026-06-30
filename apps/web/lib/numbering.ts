@@ -12,7 +12,7 @@ const PREFIX: Record<DocKind, string> = {
  * Next document number for a kind, e.g. "AA-Q-2026-001" / "AA-INV-2026-001".
  * Atomic upsert + increment on DocumentCounter so concurrent issues never
  * collide on the same sequence. The per-year sequence is keyed by (kind, year)
- * only — the prefix is not part of the key, so switching CB- → AA- continues
+ * only - the prefix is not part of the key, so switching CB- → AA- continues
  * the existing sequence rather than resetting it.
  */
 export async function nextDocumentNumber(kind: DocKind): Promise<string> {

@@ -16,7 +16,7 @@ export interface AuthoritativeLanded {
   fxRate: string;
   /** Selected shipping cost in CAD (decimal string). */
   shippingCostCAD: string;
-  /** Authoritative, rounded, JSON-safe breakdown — the figures we store/lock. */
+  /** Authoritative, rounded, JSON-safe breakdown - the figures we store/lock. */
   serialized: SerializedBreakdown;
 }
 

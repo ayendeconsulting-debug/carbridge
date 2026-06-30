@@ -18,7 +18,7 @@ const FORD: LandedCostInput = {
 const byKey = (lines: DisplayLine[]) =>
   Object.fromEntries(lines.map((l) => [l.key, l])) as Record<string, DisplayLine>;
 
-describe('computeLandedCost — SRD §8 worked example', () => {
+describe('computeLandedCost - SRD §8 worked example', () => {
   const b = computeLandedCost(FORD);
 
   it('subtotal is (P+S)*r + C in naira', () => {
