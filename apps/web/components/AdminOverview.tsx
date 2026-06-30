@@ -52,11 +52,11 @@ function Tile({
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({ title, children, columns }: { title: string; children: React.ReactNode; columns?: string }) {
   return (
     <div style={{ marginBottom: 22 }}>
       <div className="mono" style={{ fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--steel-dim)", margin: "0 2px 10px" }}>{title}</div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>{children}</div>
+      <div style={{ display: "grid", gridTemplateColumns: columns ?? "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>{children}</div>
     </div>
   );
 }
@@ -115,7 +115,7 @@ export function AdminOverview({
         <Tile label="Sold" value={vBy("SOLD")} sub="completed" onClick={() => onNavigate("catalog")} />
       </Section>
 
-      <Section title="Payments received">
+      <Section title="Payments received" columns="1fr">
         <Tile label="Cars (₦)" value={fmtNGN(carReceived)} tone="stamp" sub="recorded to date" onClick={() => onNavigate("billing")} />
         <Tile label="Membership (₦)" value={fmtNGN(memberReceived)} tone="stamp" sub="recorded to date" onClick={() => onNavigate("members")} />
       </Section>

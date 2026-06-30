@@ -229,6 +229,10 @@ export interface MyOfferView {
   listedTotal: { ngn: string; cad: string } | null;
   counter: { amount: string; currency: Currency } | null;
   canRespond: boolean;
+  hasReservation: boolean;
+  reservationId: string | null;
+  canReserve: boolean;
+  agreed: { amount: string; currency: Currency };
   vehicle: { id: string; name: string };
 }
 
@@ -243,6 +247,8 @@ export interface MyBankInstructions {
 export interface MyReservationBilling {
   quoteNumber: string | null;
   quoteStatus: string | null;
+  quoteId: string | null;
+  canAccept: boolean;
   invoice: {
     number: string | null;
     status: string;
@@ -262,6 +268,7 @@ export interface MyReservationView {
   createdAt: string;
   expiresAt: string | null;
   expired: boolean;
+  fromOffer: boolean;
   vehicle: { id: string; name: string };
   billing: MyReservationBilling | null;
 }

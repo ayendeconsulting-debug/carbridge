@@ -160,6 +160,43 @@ export async function issueQuotationForReservation(
   return { ok: true, quotationId: quotation.id, number };
 }
 
+/* ----------------------------- accept quote ----------------------------- */
+
+/**
+ * Buyer accepts their issued quotation — the gate the admin needs before
+ * invoicing. Owner-checked, idempotent, and refuses an expired quote (a stale
+ * rate must be re-issued rather than locked in).
+ */
+export async function acceptQuotationByBuyer(
+  quotationId: string,
+  userId: string,
+): Promise<ServiceResult<{ status: "ACCEPTED" }>> {
+  const q = await prisma.quotation.findUnique({ where: { id: quotationId } });
+  if (!q) return fail("Quotation not found", 404);
+  if (q.userId !== userId) return fail("Not your quotation", 403);
+  if (q.status === "ACCEPTED") return { ok: true, status: "ACCEPTED" }; // idempotent
+  if (q.status !== "ISSUED") return fail(`Cannot accept a ${q.status} quotation`, 409);
+  if (q.validUntil && q.validUntil.getTime() < Date.now()) {
+    return fail("This quote has expired — ask us to re-issue it", 409);
+  }
+
+  await prisma.$transaction(async (tx) => {
+    await tx.quotation.update({ where: { id: q.id }, data: { status: "ACCEPTED" } });
+    await tx.auditLog.create({
+      data: {
+        actorId: userId,
+        entity: "Quotation",
+        entityId: q.id,
+        action: "quotation.accept",
+        before: { status: q.status } as Prisma.InputJsonValue,
+        after: { status: "ACCEPTED" } as Prisma.InputJsonValue,
+      },
+    });
+  });
+
+  return { ok: true, status: "ACCEPTED" };
+}
+
 /* ------------------------------ issue invoice ------------------------------ */
 
 export async function issueInvoiceForQuotation(
@@ -168,8 +205,13 @@ export async function issueInvoiceForQuotation(
 ): Promise<ServiceResult<{ invoiceId: string; number: string }>> {
   const q = await prisma.quotation.findUnique({ where: { id: quotationId } });
   if (!q) return fail("Quotation not found", 404);
-  if (q.status !== "ISSUED" && q.status !== "ACCEPTED") {
-    return fail(`Cannot invoice a ${q.status} quotation`, 409);
+  if (q.status !== "ACCEPTED") {
+    return fail(
+      q.status === "ISSUED"
+        ? "Quotation is awaiting buyer acceptance"
+        : `Cannot invoice a ${q.status} quotation`,
+      409,
+    );
   }
 
   const existing = await prisma.invoice.findFirst({
@@ -197,8 +239,7 @@ export async function issueInvoiceForQuotation(
         dueAt,
       },
     });
-    // Issuing an invoice converts the quote — mark it accepted.
-    await tx.quotation.update({ where: { id: q.id }, data: { status: "ACCEPTED" } });
+    // Issuing an invoice consumes the (already buyer-accepted) quote; no status flip needed.
     await tx.auditLog.create({
       data: {
         actorId,

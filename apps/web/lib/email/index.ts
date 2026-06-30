@@ -7,6 +7,7 @@ import {
   invoiceEmail,
   receiptEmail,
   premiumGrantedEmail,
+  offerAcceptedEmail,
 } from "./templates";
 
 export interface EmailMessage {
@@ -163,5 +164,27 @@ export async function sendPremiumGrantedEmail(args: {
     await sendEmail({ to: b.email, ...c });
   } catch (err) {
     console.error("[email] premium-granted email failed:", err);
+  }
+}
+
+export async function sendOfferAcceptedEmail(args: {
+  userId: string;
+  vehicleName: string;
+  agreedAmount: string;
+  agreedCurrency: "NGN" | "CAD";
+}): Promise<void> {
+  try {
+    const b = await buyer(args.userId);
+    if (!b) return;
+    const c = offerAcceptedEmail({
+      name: b.name,
+      vehicleName: args.vehicleName,
+      agreedAmount: args.agreedAmount,
+      agreedCurrency: args.agreedCurrency,
+      accountUrl: `${appUrl()}/account`,
+    });
+    await sendEmail({ to: b.email, ...c });
+  } catch (err) {
+    console.error("[email] offer-accepted email failed:", err);
   }
 }

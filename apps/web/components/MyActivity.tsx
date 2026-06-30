@@ -92,6 +92,50 @@ export function MyActivity({
     }
   };
 
+  const reserveFromOffer = async (offerId: string) => {
+    setBusy(offerId);
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/reservations/from-offer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offerId }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsg({ id: offerId, text: data.error ?? "Could not reserve" });
+        return;
+      }
+      router.refresh();
+    } catch {
+      setMsg({ id: offerId, text: "Network error — try again" });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const acceptQuote = async (quoteId: string) => {
+    setBusy(quoteId);
+    setMsg(null);
+    try {
+      const res = await fetch(`/api/quotations/${quoteId}/accept`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: "{}",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setMsg({ id: quoteId, text: data.error ?? "Could not accept" });
+        return;
+      }
+      router.refresh();
+    } catch {
+      setMsg({ id: quoteId, text: "Network error — try again" });
+    } finally {
+      setBusy(null);
+    }
+  };
+
   return (
     <div style={{ maxWidth: 720, margin: "0 auto", padding: "20px 16px 80px" }}>
       <div className="mono" style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", color: "var(--steel-dim)" }}>Your account</div>
@@ -150,7 +194,9 @@ export function MyActivity({
               {r.expiresAt ? (r.expired ? "expired" : `until ${shortDate(r.expiresAt)}`) : "—"}
             </Field>
           </div>
-          {r.billing && <BillingBlock b={r.billing} />}
+          <JourneyTracker fromOffer={r.fromOffer} b={r.billing} paid={r.billing?.invoice?.status === "PAID"} />
+          {msg && r.billing?.quoteId && msg.id === r.billing.quoteId && <p style={errStyle}>{msg.text}</p>}
+          {r.billing && <BillingBlock b={r.billing} onAcceptQuote={acceptQuote} busyId={busy} />}
         </div>
       ))}
 
@@ -189,6 +235,23 @@ export function MyActivity({
                   <button className="btn" disabled={isBusy} onClick={() => respond(o.id, "decline")} style={dangerBtn}>Decline</button>
                 </div>
               </div>
+            )}
+
+            {o.canReserve && (
+              <div style={{ marginTop: 12 }}>
+                <p className="mono" style={{ fontSize: 11, color: "var(--stamp)", marginBottom: 8 }}>
+                  ✓ Accepted at {fmt(o.agreed.amount, o.agreed.currency)} — reserve it to start your purchase:
+                </p>
+                <button className="btn btn-buy" disabled={isBusy} onClick={() => reserveFromOffer(o.id)}>
+                  {isBusy ? "…" : `Reserve at ${fmt(o.agreed.amount, o.agreed.currency)}`}
+                </button>
+              </div>
+            )}
+
+            {o.hasReservation && o.status === "ACCEPTED" && (
+              <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 10 }}>
+                Reserved — see Reservations above for your quote &amp; payment.
+              </p>
             )}
           </div>
         );
@@ -263,7 +326,46 @@ function MembershipInvoiceBlock({ inv }: { inv: MyMembershipInvoiceView }) {
   );
 }
 
-function BillingBlock({ b }: { b: MyReservationBilling }) {
+function JourneyTracker({
+  fromOffer,
+  b,
+  paid,
+}: {
+  fromOffer: boolean;
+  b: MyReservationBilling | null;
+  paid: boolean;
+}) {
+  const steps: { label: string; on: boolean }[] = [];
+  if (fromOffer) steps.push({ label: "Offered", on: true }, { label: "Accepted", on: true });
+  steps.push(
+    { label: "Reserved", on: true },
+    { label: "Quoted", on: !!b },
+    { label: "Invoiced", on: !!b?.invoice },
+    { label: "Paid", on: paid },
+  );
+  return (
+    <div style={{ display: "flex", gap: 9, alignItems: "center", flexWrap: "wrap", margin: "12px 0 2px" }}>
+      {steps.map((s, i) => (
+        <span key={s.label} style={{ display: "flex", gap: 9, alignItems: "center" }}>
+          {i > 0 && <span style={{ color: "var(--steel-dim)", fontSize: 11 }}>→</span>}
+          <span className="mono" style={{ fontSize: 9, letterSpacing: 1, textTransform: "uppercase", color: s.on ? "var(--frost)" : "var(--steel-dim)", opacity: s.on ? 1 : 0.55 }}>
+            {s.on ? "●" : "○"} {s.label}
+          </span>
+        </span>
+      ))}
+    </div>
+  );
+}
+
+function BillingBlock({
+  b,
+  onAcceptQuote,
+  busyId,
+}: {
+  b: MyReservationBilling;
+  onAcceptQuote: (quoteId: string) => void;
+  busyId: string | null;
+}) {
   const inv = b.invoice;
   const remaining = inv ? Math.max(0, Number(inv.amountNGN) - Number(inv.amountPaidNGN)).toFixed(2) : "0";
   return (
@@ -274,11 +376,21 @@ function BillingBlock({ b }: { b: MyReservationBilling }) {
         {b.quoteStatus && <Badge status={b.quoteStatus} />}
       </div>
 
-      {!inv && (
-        <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>
-          Quotation issued — your invoice with payment details will appear here shortly.
-        </p>
-      )}
+      {!inv &&
+        (b.canAccept && b.quoteId ? (
+          <div style={{ marginTop: 10 }}>
+            <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginBottom: 8 }}>
+              Review your quote and accept to proceed — we issue your invoice once you accept.
+            </p>
+            <button className="btn btn-buy" disabled={busyId === b.quoteId} onClick={() => onAcceptQuote(b.quoteId!)}>
+              {busyId === b.quoteId ? "…" : "Accept quote"}
+            </button>
+          </div>
+        ) : (
+          <p className="mono" style={{ fontSize: 11, color: "var(--steel-dim)", marginTop: 8 }}>
+            Quote accepted — your invoice with payment details will appear here shortly.
+          </p>
+        ))}
 
       {inv && (
         <div style={{ marginTop: 10 }}>

@@ -72,11 +72,14 @@ export async function getMyOffers(userId: string): Promise<MyOfferView[]> {
     include: {
       vehicle: { select: { id: true, year: true, make: true, model: true } },
       rateLock: { select: { expiresAt: true } },
+      reservation: { select: { id: true } },
     },
   });
 
   return rows.map((o) => {
     const expiresAt = o.rateLock?.expiresAt ?? null;
+    const counter = snapshotCounter(o.listingSnapshot);
+    const agreed = counter ?? { amount: o.amount.toString(), currency: o.currency as Currency };
     return {
       id: o.id,
       status: o.status,
@@ -87,8 +90,12 @@ export async function getMyOffers(userId: string): Promise<MyOfferView[]> {
       rateExpiresAt: expiresAt ? expiresAt.toISOString() : null,
       rateExpired: expiresAt ? expiresAt.getTime() < now : false,
       listedTotal: snapshotTotal(o.listingSnapshot),
-      counter: snapshotCounter(o.listingSnapshot),
+      counter,
       canRespond: o.status === "COUNTERED",
+      hasReservation: !!o.reservation,
+      reservationId: o.reservation?.id ?? null,
+      canReserve: o.status === "ACCEPTED" && !o.reservation,
+      agreed: { amount: agreed.amount, currency: agreed.currency },
       vehicle: { id: o.vehicle.id, name: vehicleName(o.vehicle.year, o.vehicle.make, o.vehicle.model) },
     };
   });
@@ -123,6 +130,8 @@ export async function getMyReservations(userId: string): Promise<MyReservationVi
       ? {
           quoteNumber: q.number,
           quoteStatus: q.status,
+          quoteId: q.id,
+          canAccept: q.status === "ISSUED",
           invoice: inv
             ? {
                 number: inv.number,
@@ -145,6 +154,7 @@ export async function getMyReservations(userId: string): Promise<MyReservationVi
       createdAt: r.createdAt.toISOString(),
       expiresAt: r.expiresAt ? r.expiresAt.toISOString() : null,
       expired: r.expiresAt ? r.expiresAt.getTime() < now : false,
+      fromOffer: r.offerId != null,
       vehicle: { id: r.vehicle.id, name: vehicleName(r.vehicle.year, r.vehicle.make, r.vehicle.model) },
       billing,
     };

@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
+import { sendOfferAcceptedEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,29 @@ export async function POST(
       });
       return u;
     });
+
+    if (next === "ACCEPTED") {
+      // Best-effort: nudge the buyer to reserve at the agreed price (never throws).
+      const snap = offer.listingSnapshot as { counter?: { amount?: string; currency?: string } } | null;
+      const counter = snap?.counter;
+      const agreedAmount =
+        counter && typeof counter.amount === "string" ? counter.amount : offer.amount.toString();
+      const agreedCurrency =
+        counter && (counter.currency === "CAD" || counter.currency === "NGN")
+          ? counter.currency
+          : (offer.currency as "NGN" | "CAD");
+      const v = await prisma.vehicle.findUnique({
+        where: { id: offer.vehicleId },
+        select: { year: true, make: true, model: true },
+      });
+      await sendOfferAcceptedEmail({
+        userId: offer.userId,
+        vehicleName: v ? `${v.year} ${v.make} ${v.model}` : "your vehicle",
+        agreedAmount,
+        agreedCurrency,
+      });
+    }
+
     return Response.json({ id: updated.id, status: updated.status });
   }
 

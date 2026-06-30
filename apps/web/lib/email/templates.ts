@@ -91,6 +91,19 @@ function greeting(name: string | null): string {
   return p(`Hi ${name ? esc(name) : "there"},`);
 }
 
+function stepsBlock(title: string, items: string[]): string {
+  const lis = items
+    .map(
+      (t) =>
+        `<li style="margin:0 0 7px;font-family:${SERIF};font-size:14px;line-height:1.55;color:${C.ink};">${t}</li>`,
+    )
+    .join("");
+  return `<div style="margin:2px 0 14px;">
+    <div style="font-family:${MONO};font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:${C.soft};margin-bottom:8px;">${esc(title)}</div>
+    <ol style="margin:0;padding-left:20px;">${lis}</ol>
+  </div>`;
+}
+
 /* ------------------------------- quote ------------------------------- */
 
 export function quoteEmail(a: {
@@ -111,8 +124,14 @@ export function quoteEmail(a: {
        ${row("Approx. CAD", fmtCAD(a.totalCAD))}
        ${a.validUntil ? row("Rate locked until", fmtDate(a.validUntil)) : ""}
      </table>` +
-    button(a.accountUrl, "View in my activity") +
-    p(`When you're ready to proceed, we'll issue an invoice with bank transfer instructions.`);
+    stepsBlock("What happens next", [
+      "Review your quote above.",
+      "<b>Accept it</b> in your activity to confirm you want to proceed.",
+      "We issue your invoice with bank-transfer details.",
+      "Pay by transfer — we confirm and secure your vehicle.",
+    ]) +
+    button(a.accountUrl, "Accept & view in my activity") +
+    p(`Your landed total is held at the locked rate until ${a.validUntil ? fmtDate(a.validUntil) : "the rate-lock expires"}. We can only invoice once you've accepted.`);
   return {
     subject: `Your quote ${a.number} — ${BRAND.name}`,
     html: shell({ preheader: `Quote ${a.number} for the ${a.vehicleName}`, heading: "Your quote is ready", body }),
@@ -256,6 +275,47 @@ Your Premium membership is now active${a.expiresAt ? ` through ${fmtDate(a.expir
 Premium unlocks Reserve, Make an Offer, and Source-a-Car.
 
 ${a.accountUrl}
+
+${BRAND.name} · ${BRAND.tagline}`,
+  };
+}
+
+/* --------------------------- offer accepted --------------------------- */
+
+export function offerAcceptedEmail(a: {
+  name: string | null;
+  vehicleName: string;
+  agreedAmount: string;
+  agreedCurrency: "NGN" | "CAD";
+  accountUrl: string;
+}): EmailContent {
+  const agreed = a.agreedCurrency === "NGN" ? fmtNGN(a.agreedAmount) : fmtCAD(a.agreedAmount);
+  const body =
+    greeting(a.name) +
+    p(`Good news — your offer of <b>${esc(agreed)}</b> on the <b>${esc(a.vehicleName)}</b> was accepted.`) +
+    stepsBlock("To complete your purchase", [
+      "<b>Reserve</b> the vehicle at the agreed price from your activity.",
+      "We issue your quote at that price — you accept it.",
+      "We invoice you with bank-transfer details; you pay by transfer.",
+      "We confirm the payment and your vehicle is secured.",
+    ]) +
+    button(a.accountUrl, "Reserve at the agreed price") +
+    p(`Reserving holds the car for you. Until you reserve, it stays available to other buyers, so it's worth doing soon.`);
+  return {
+    subject: `Your offer was accepted — ${BRAND.name}`,
+    html: shell({
+      preheader: `Reserve the ${a.vehicleName} at your agreed price of ${agreed}`,
+      heading: "Your offer was accepted",
+      body,
+    }),
+    text: `Hi ${a.name ?? "there"},
+
+Good news — your offer of ${agreed} on the ${a.vehicleName} was accepted.
+
+To complete your purchase, reserve the vehicle at the agreed price:
+${a.accountUrl}
+
+Reserving holds the car for you. Until you reserve, it stays available to other buyers.
 
 ${BRAND.name} · ${BRAND.tagline}`,
   };

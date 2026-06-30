@@ -345,6 +345,7 @@ model Offer {
   user     User      @relation(fields: [userId], references: [id])
   rateLock RateLock? @relation(fields: [rateLockId], references: [id])
   quotations Quotation[]
+  reservation Reservation?
 
   @@index([vehicleId])
   @@index([userId])
@@ -359,6 +360,7 @@ model Reservation {
   lockedTotalCAD Decimal           @db.Decimal(14, 2)
   lockedTotalNGN Decimal           @db.Decimal(18, 2)
   rateLockId     String?
+  offerId        String?           @unique // set when reserved from an accepted offer; @unique = one reservation per offer
   status         ReservationStatus @default(PENDING)
   depositRef     String?
   expiresAt      DateTime?
@@ -368,6 +370,7 @@ model Reservation {
   vehicle  Vehicle   @relation(fields: [vehicleId], references: [id])
   user     User      @relation(fields: [userId], references: [id])
   rateLock RateLock? @relation(fields: [rateLockId], references: [id])
+  offer    Offer?    @relation(fields: [offerId], references: [id])
   quotations Quotation[]
 
   @@index([vehicleId])

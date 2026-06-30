@@ -201,6 +201,8 @@ export function AdminBilling({ billing }: { billing: AdminBillingRow[] }) {
               <span style={{ color: "var(--steel-dim)" }}>→</span>
               <Step label="Quoted" on={!!q} />
               <span style={{ color: "var(--steel-dim)" }}>→</span>
+              <Step label="Accepted" on={q?.status === "ACCEPTED" || !!inv} />
+              <span style={{ color: "var(--steel-dim)" }}>→</span>
               <Step label="Invoiced" on={!!inv} />
               <span style={{ color: "var(--steel-dim)" }}>→</span>
               <Step label="Paid" on={inv?.status === "PAID"} />
@@ -231,10 +233,16 @@ export function AdminBilling({ billing }: { billing: AdminBillingRow[] }) {
                 <span className="mono" style={{ fontSize: 11, color: "var(--steel-dim)" }}>Reservation {row.reservationStatus.toLowerCase()} — nothing to bill.</span>
               )}
 
-              {q && !inv && (
+              {q && !inv && q.status === "ACCEPTED" && (
                 <button style={primary} disabled={busy !== null} onClick={() => call(`/api/admin/quotations/${q.id}/invoice`, "Invoice issued.")}>
                   {busy?.includes("/invoice") ? "Issuing…" : "Issue invoice"}
                 </button>
+              )}
+
+              {q && !inv && q.status !== "ACCEPTED" && (
+                <span className="mono" style={{ fontSize: 11, color: "var(--amber)", border: "1px solid var(--amber)", borderRadius: 6, padding: "4px 9px" }}>
+                  Awaiting buyer acceptance
+                </span>
               )}
 
               {inv && inv.status !== "PAID" && (
