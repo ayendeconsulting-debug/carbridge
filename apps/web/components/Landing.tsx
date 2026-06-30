@@ -342,6 +342,17 @@ export function Landing({ recent, fx, favoritedIds = [] }: { recent: VehicleCard
         )}
 
         <section className="section">
+          <div className="hcard" style={{ padding: "26px 22px", textAlign: "center" }}>
+            <div className="sec-eyebrow" style={{ color: "var(--amber-deep)" }}>Premium · concierge sourcing</div>
+            <div className="sec-title" style={{ marginBottom: 10 }}>Can't find it? We'll source it.</div>
+            <p style={{ color: "var(--steel)", maxWidth: 520, margin: "0 auto 18px", lineHeight: 1.6 }}>
+              Tell us the exact make, model and budget. Our team hunts the Canadian market, inspects the car, and comes back with a fully landed price - purchase, shipping, Lagos clearing and all - in CAD and naira.
+            </p>
+            <Link href="/requests/new" className="btn btn-buy" style={{ display: "inline-block" }}>Source a car →</Link>
+          </div>
+        </section>
+
+        <section className="section">
           <div className="sec-eyebrow">Questions</div>
           <div className="sec-title">Good to know.</div>
           <FaqList />

@@ -1,13 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { isAdmin } from "@/lib/admin";
+import { sendRequestMatchedEmail } from "@/lib/email";
 
 export const dynamic = "force-dynamic";
 
-type Action = "match" | "decline";
+type Action = "acknowledge" | "match" | "decline";
 
 // Admin response to a Source-a-Car request. Guarded transitions; each audited.
-//   match   : SUBMITTED|IN_REVIEW -> MATCHED (links a vehicle + optional note)
-//   decline : SUBMITTED|IN_REVIEW|MATCHED -> DECLINED (+ optional note)
+//   acknowledge : SUBMITTED -> IN_REVIEW (buyer sees we're on it)
+//   match       : SUBMITTED|IN_REVIEW -> MATCHED (links a vehicle + optional note)
+//   decline     : SUBMITTED|IN_REVIEW|MATCHED -> DECLINED (+ optional note)
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -29,6 +31,33 @@ export async function POST(
   const request = await prisma.carRequest.findUnique({ where: { id } });
   if (!request) return Response.json({ error: "Request not found" }, { status: 404 });
 
+  if (action === "acknowledge") {
+    if (request.status !== "SUBMITTED") {
+      return Response.json(
+        { error: `Cannot acknowledge a request that is ${request.status}` },
+        { status: 409 },
+      );
+    }
+    const updated = await prisma.$transaction(async (tx) => {
+      const u = await tx.carRequest.update({
+        where: { id },
+        data: { status: "IN_REVIEW" },
+      });
+      await tx.auditLog.create({
+        data: {
+          actorId: null,
+          entity: "CarRequest",
+          entityId: id,
+          action: "carRequest.acknowledge",
+          before: { status: request.status },
+          after: { status: "IN_REVIEW" },
+        },
+      });
+      return u;
+    });
+    return Response.json({ id: updated.id, status: updated.status });
+  }
+
   if (action === "match") {
     if (request.status !== "SUBMITTED" && request.status !== "IN_REVIEW") {
       return Response.json(
@@ -42,7 +71,7 @@ export async function POST(
     }
     const vehicle = await prisma.vehicle.findUnique({
       where: { id: vehicleId },
-      select: { id: true },
+      select: { id: true, year: true, make: true, model: true },
     });
     if (!vehicle) {
       return Response.json({ error: "That vehicle no longer exists" }, { status: 404 });
@@ -65,6 +94,15 @@ export async function POST(
       });
       return u;
     });
+
+    // Best-effort buyer notification (never throws; mirrors the other sends).
+    await sendRequestMatchedEmail({
+      userId: request.userId,
+      vehicleId: vehicle.id,
+      vehicleName: `${vehicle.year} ${vehicle.make} ${vehicle.model}`,
+      adminNote: note,
+    });
+
     return Response.json({ id: updated.id, status: updated.status, matchedVehicleId: vehicleId });
   }
 

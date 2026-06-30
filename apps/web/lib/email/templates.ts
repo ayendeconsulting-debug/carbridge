@@ -320,3 +320,47 @@ Reserving holds the car for you. Until you reserve, it stays available to other 
 ${BRAND.name} · ${BRAND.tagline}`,
   };
 }
+
+/* --------------------------- request matched --------------------------- */
+
+export function requestMatchedEmail(a: {
+  name: string | null;
+  vehicleName: string;
+  vehicleUrl: string;
+  adminNote: string | null;
+  accountUrl: string;
+}): EmailContent {
+  const noteBlock = a.adminNote
+    ? p(`<span style="color:${C.soft};">A note from our team:</span> ${esc(a.adminNote)}`)
+    : "";
+  const body =
+    greeting(a.name) +
+    p(`Good news - we sourced a match for your request: the <b>${esc(a.vehicleName)}</b>, landed cost shown in full, CAD and naira side by side.`) +
+    noteBlock +
+    button(a.vehicleUrl, "View the vehicle") +
+    stepsBlock("If it's the one", [
+      "Open the listing and review the full landed-cost manifest.",
+      "<b>Reserve</b> it (Premium) to freeze the price and your 72-hour rate lock.",
+      "We issue a quote at that price; you accept and we invoice you with bank-transfer details.",
+    ]) +
+    p(`Not quite right? Reply and tell us - we'll keep hunting.`);
+  return {
+    subject: `We found your car - ${BRAND.name}`,
+    html: shell({
+      preheader: `We sourced a match for your request: ${a.vehicleName}`,
+      heading: "We found a match for you",
+      body,
+    }),
+    text: `Hi ${a.name ?? "there"},
+
+Good news - we sourced a match for your request: the ${a.vehicleName}.
+${a.adminNote ? `\nA note from our team: ${a.adminNote}\n` : ""}
+View the vehicle: ${a.vehicleUrl}
+
+If it's the one, reserve it (Premium) to freeze the price and your 72-hour rate lock, then we quote and invoice you.
+
+Not quite right? Reply and tell us - we'll keep hunting.
+
+${BRAND.name} · ${BRAND.tagline}`,
+  };
+}

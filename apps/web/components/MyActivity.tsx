@@ -31,6 +31,7 @@ const shortDate = (iso: string) =>
 
 const STATUS_TONE: Record<string, string> = {
   SUBMITTED: "var(--amber)", COUNTERED: "var(--amber)", PENDING: "var(--amber)", ACTIVE: "var(--stamp)",
+  IN_REVIEW: "var(--amber)", MATCHED: "var(--stamp)",
   ACCEPTED: "var(--stamp)", CONFIRMED: "var(--stamp)",
   ISSUED: "var(--frost)", PART_PAID: "var(--amber)", PAID: "var(--stamp)", DRAFT: "var(--steel-dim)", VOID: "var(--steel-dim)",
   DECLINED: "var(--steel-dim)", CANCELLED: "var(--steel-dim)", EXPIRED: "var(--steel-dim)", PAST_DUE: "var(--amber)",
@@ -275,6 +276,12 @@ export function MyActivity({
           <div style={fieldRow}>
             <Field k="Budget">{cr.budget.currency === "NGN" ? fmtNGN(cr.budget.amount) : fmtCAD(cr.budget.amount)}</Field>
           </div>
+          {cr.status === "SUBMITTED" && (
+            <p className="mono" style={{ fontSize: 11, color: "var(--steel)", marginTop: 8 }}>Received - our sourcing team will review it shortly.</p>
+          )}
+          {cr.status === "IN_REVIEW" && (
+            <p className="mono" style={{ fontSize: 11, color: "var(--amber)", marginTop: 8 }}>Being sourced - our team is hunting for a match in Canada.</p>
+          )}
           {cr.matched && (
             <p className="mono" style={{ fontSize: 12, color: "var(--stamp)", marginTop: 8 }}>
               Matched →{" "}

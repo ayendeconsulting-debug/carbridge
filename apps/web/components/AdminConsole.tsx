@@ -29,6 +29,8 @@ const shortDate = (iso: string) =>
 
 const STATUS_TONE: Record<string, string> = {
   SUBMITTED: "var(--amber)",
+  IN_REVIEW: "var(--amber)",
+  MATCHED: "var(--stamp)",
   COUNTERED: "var(--amber)",
   PENDING: "var(--amber)",
   ACCEPTED: "var(--stamp)",
@@ -282,6 +284,7 @@ export function AdminConsole({
               </div>
             ) : (
               <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
+                {cr.status === "SUBMITTED" && <button className="btn" disabled={isBusy} onClick={() => act("car-requests", cr.id, { action: "acknowledge" })} style={ghostBtn}>Acknowledge</button>}
                 {open && <button className="btn btn-buy" disabled={isBusy} onClick={() => { setMatchFor(cr.id); setMatchVehicle(""); setMatchNote(""); setMsg(null); }}>Match a vehicle</button>}
                 {canDecline && <button className="btn" disabled={isBusy} onClick={() => act("car-requests", cr.id, { action: "decline" })} style={dangerBtn}>Decline</button>}
               </div>

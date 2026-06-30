@@ -75,6 +75,16 @@ export function VehicleDetail({
         <div className="mono" style={{ fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--steel-dim)", margin: "0 0 12px" }}>Landed cost manifest</div>
 
         <DetailClient v={v} fx={fx} tier={tier} />
+
+        <div style={{ marginTop: 24, borderTop: "1px solid var(--rule)", paddingTop: 18 }}>
+          <div className="mono" style={{ fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", color: "var(--steel-dim)", marginBottom: 6 }}>Not quite the one?</div>
+          <p style={{ color: "var(--steel)", lineHeight: 1.6, marginBottom: 12, fontSize: 14 }}>
+            Tell us your exact spec and budget - our team will source a {v.make} {v.model} (or anything else) from the Canadian market and come back with a fully landed quote.
+          </p>
+          <Link href={`/requests/new?make=${encodeURIComponent(v.make)}&model=${encodeURIComponent(v.model)}`} className="btn" style={{ display: "inline-block" }}>
+            Source one like this →
+          </Link>
+        </div>
       </div>
     </div>
   );

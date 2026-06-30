@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { useFxRate } from "./useFxRate";
+import { fmtCAD, fmtNGN } from "@/lib/format";
+import type { FxView } from "@/lib/types";
 
 const BODY_TYPES = ["SUV", "SEDAN", "HATCHBACK", "WAGON", "COUPE", "TRUCK", "VAN", "OTHER"];
 
@@ -23,11 +26,22 @@ const labelStyle: React.CSSProperties = {
   margin: "0 0 6px 2px",
 };
 
-export function SourceACarForm() {
+export function SourceACarForm({ fx, defaults }: { fx: FxView; defaults?: { make?: string; model?: string } }) {
+  const live = useFxRate(fx);
+  const rate = Number(live.effectiveRate);
   const [currency, setCurrency] = useState<"NGN" | "CAD">("NGN");
+  const [amount, setAmount] = useState("");
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const amt = Number(amount);
+  const converted =
+    amt > 0 && rate > 0
+      ? currency === "NGN"
+        ? `≈ ${fmtCAD(amt / rate)}`
+        : `≈ ${fmtNGN(amt * rate)}`
+      : null;
 
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -82,8 +96,8 @@ export function SourceACarForm() {
   return (
     <form onSubmit={submit} style={{ display: "grid", gap: 16 }}>
       <Row>
-        <Field label="Make"><input name="make" placeholder="Toyota" style={inputStyle} /></Field>
-        <Field label="Model"><input name="model" placeholder="Land Cruiser" style={inputStyle} /></Field>
+        <Field label="Make"><input name="make" defaultValue={defaults?.make} placeholder="Toyota" style={inputStyle} /></Field>
+        <Field label="Model"><input name="model" defaultValue={defaults?.model} placeholder="Land Cruiser" style={inputStyle} /></Field>
       </Row>
       <Row>
         <Field label="Year from"><input name="yearMin" type="number" inputMode="numeric" placeholder="2018" style={inputStyle} /></Field>
@@ -106,8 +120,13 @@ export function SourceACarForm() {
               <button type="button" key={c} className={currency === c ? "on" : ""} onClick={() => setCurrency(c)}>{c}</button>
             ))}
           </div>
-          <input name="budgetAmount" type="number" inputMode="decimal" placeholder={currency === "NGN" ? "25,000,000" : "30,000"} style={inputStyle} />
+          <input name="budgetAmount" type="number" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder={currency === "NGN" ? "25,000,000" : "30,000"} style={inputStyle} />
         </div>
+        {converted && (
+          <div className="mono" style={{ fontSize: 11, color: "var(--steel)", margin: "6px 2px 0" }}>
+            {converted} <span style={{ color: "var(--steel-dim)" }}>· {currency === "NGN" ? "in CAD" : "in naira"}, live rate</span>
+          </div>
+        )}
       </Field>
 
       <Field label="Notes (optional)">

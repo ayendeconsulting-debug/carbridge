@@ -8,6 +8,7 @@ import {
   receiptEmail,
   premiumGrantedEmail,
   offerAcceptedEmail,
+  requestMatchedEmail,
 } from "./templates";
 
 export interface EmailMessage {
@@ -186,5 +187,27 @@ export async function sendOfferAcceptedEmail(args: {
     await sendEmail({ to: b.email, ...c });
   } catch (err) {
     console.error("[email] offer-accepted email failed:", err);
+  }
+}
+
+export async function sendRequestMatchedEmail(args: {
+  userId: string;
+  vehicleId: string;
+  vehicleName: string;
+  adminNote: string | null;
+}): Promise<void> {
+  try {
+    const b = await buyer(args.userId);
+    if (!b) return;
+    const c = requestMatchedEmail({
+      name: b.name,
+      vehicleName: args.vehicleName,
+      vehicleUrl: `${appUrl()}/vehicles/${args.vehicleId}`,
+      adminNote: args.adminNote,
+      accountUrl: `${appUrl()}/account`,
+    });
+    await sendEmail({ to: b.email, ...c });
+  } catch (err) {
+    console.error("[email] request-matched email failed:", err);
   }
 }

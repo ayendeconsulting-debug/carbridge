@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
 import { VehicleCard } from "./VehicleCard";
 import { TRANSMISSIONS, FUEL_TYPES, TRANSMISSION_LABEL, FUEL_LABEL } from "@/lib/vehicle-spec";
 import type { FxView, VehicleCardView } from "@/lib/types";
@@ -112,9 +113,12 @@ export function GalleryGrid({ cards, fx, favoritedIds = [] }: { cards: VehicleCa
       </div>
 
       {shown.length === 0 ? (
-        <p style={{ color: "var(--steel-dim)", padding: "24px 4px" }}>
-          No vehicles match your search and filters. Try widening them.
-        </p>
+        <div className="hcard" style={{ padding: 24, textAlign: "center", marginTop: 8 }}>
+          <p style={{ color: "var(--steel)", marginBottom: 14 }}>
+            No vehicles match your search and filters. We can source it for you instead - tell us the spec and your budget, and our team hunts the Canadian market.
+          </p>
+          <Link href="/requests/new" className="btn btn-buy" style={{ display: "inline-block" }}>Source this car →</Link>
+        </div>
       ) : (
         <div className="grid">
           {shown.map((c) => (
@@ -122,6 +126,11 @@ export function GalleryGrid({ cards, fx, favoritedIds = [] }: { cards: VehicleCa
           ))}
         </div>
       )}
+
+      <div style={{ marginTop: 24, borderTop: "1px solid var(--rule)", paddingTop: 16, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        <span style={{ color: "var(--steel)", fontSize: 13 }}>Can't find the exact car? Our team will source it from Canada to your budget.</span>
+        <Link href="/requests/new" className="mono" style={{ color: "var(--amber)", fontSize: 12, letterSpacing: 1, textTransform: "uppercase", whiteSpace: "nowrap" }}>Source a car →</Link>
+      </div>
     </div>
   );
 }

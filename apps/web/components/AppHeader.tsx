@@ -96,6 +96,7 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
       {menuOpen && (
         <nav className="hmenu" onClick={() => setMenuOpen(false)}>
           <Link href="/gallery" className={navOn("/gallery") ? "on" : ""}>Gallery</Link>
+          <Link href="/requests/new" className={navOn("/requests") ? "on" : ""}>Source a car</Link>
           <Link href="/account" className={navOn("/account") ? "on" : ""}>Activity</Link>
           {isAdmin && <Link href="/admin" className={navOn("/admin") ? "on" : ""}>Admin</Link>}
         </nav>
@@ -103,6 +104,7 @@ export function AppHeader({ fx, tier, isAdmin = false }: { fx: FxView; tier: Tie
 
       <nav className="hnav">
         <Link href="/gallery" className={`navlink${navOn("/gallery") ? " on" : ""}`}>Gallery</Link>
+        <Link href="/requests/new" className={`navlink${navOn("/requests") ? " on" : ""}`}>Source a car</Link>
         <Link href="/account" className={`navlink${navOn("/account") ? " on" : ""}`}>Activity</Link>
         {isAdmin && (
           <Link href="/admin" className={`navlink admin${navOn("/admin") ? " on" : ""}`}>Admin</Link>
